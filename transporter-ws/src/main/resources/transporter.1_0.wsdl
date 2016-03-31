@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    WSDL contract for a UPA Transporter service
+
+    This WSDL defines the operations provided by the Web Service,
+    and should not be modified.
+
+    For more information, consult sections
+    wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
+
+-->
+
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+    xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+    xmlns:tns="http://ws.transporter.upa.pt/"
+    targetNamespace="http://ws.transporter.upa.pt/"
+    name="TransporterWebService">
+
+    <types>
+        <xs:schema
+            targetNamespace="http://ws.transporter.upa.pt/"
+            version="1.0">
+        
+            <xs:complexType name="jobView">
+                <xs:sequence>
+                    <xs:element name="companyName" type="xs:string" minOccurs="0" />
+                    <xs:element name="jobIdentifier" type="xs:string" minOccurs="0" />
+                    <xs:element name="jobOrigin" type="xs:string" minOccurs="0" />
+                    <xs:element name="jobDestination" type="xs:string" minOccurs="0" />
+                    <xs:element name="jobPrice" type="xs:int" />
+                    <xs:element name="jobState" type="tns:jobStateView" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+        
+            <xs:simpleType name="jobStateView">
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="PROPOSED" />
+                    <xs:enumeration value="REJECTED" />
+                    <xs:enumeration value="ACCEPTED" />
+                    <xs:enumeration value="HEADING" />
+                    <xs:enumeration value="ONGOING" />
+                    <xs:enumeration value="COMPLETED" />
+                </xs:restriction>
+            </xs:simpleType>
+        
+        
+            <xs:complexType name="ping">
+                <xs:sequence>
+                    <xs:element name="name" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ping" type="tns:ping" />
+        
+            <xs:complexType name="pingResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="pingResponse" type="tns:pingResponse" />
+        
+        
+            <xs:complexType name="requestJob">
+                <xs:sequence>
+                    <xs:element name="origin" type="xs:string" minOccurs="0" />
+                    <xs:element name="destination" type="xs:string" minOccurs="0" />
+                    <xs:element name="price" type="xs:int" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="requestJob" type="tns:requestJob" />
+        
+            <xs:complexType name="requestJobResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="tns:jobView" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="requestJobResponse" type="tns:requestJobResponse" />
+        
+        
+            <xs:complexType name="decideJob">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" />
+                    <xs:element name="accept" type="xs:boolean" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="decideJob" type="tns:decideJob" />
+        
+            <xs:complexType name="decideJobResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="tns:jobView" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="decideJobResponse" type="tns:decideJobResponse" />
+        
+        
+            <xs:complexType name="jobStatus">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="jobStatus" type="tns:jobStatus" />
+        
+            <xs:complexType name="jobStatusResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="tns:jobView" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="jobStatusResponse" type="tns:jobStatusResponse" />
+        
+        
+            <xs:complexType name="listJobs">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:element name="listJobs" type="tns:listJobs" />
+        
+            <xs:complexType name="listJobsResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="tns:jobView" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="listJobsResponse" type="tns:listJobsResponse" />
+        
+        
+            <xs:complexType name="clearJobs">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:element name="clearJobs" type="tns:clearJobs" />
+        
+            <xs:complexType name="clearJobsResponse">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:element name="clearJobsResponse" type="tns:clearJobsResponse" />
+        
+        
+            <xs:complexType name="BadLocationFault">
+                <xs:sequence>
+                    <xs:element name="location" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BadLocationFault" type="tns:BadLocationFault" />
+        
+            <xs:complexType name="BadPriceFault">
+                <xs:sequence>
+                    <xs:element name="price" type="xs:int" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BadPriceFault" type="tns:BadPriceFault" />
+        
+            <xs:complexType name="BadJobFault">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="BadJobFault" type="tns:BadJobFault" />
+        
+        </xs:schema>
+    </types>
+
+    <!--  Messages (use elements defined in the schema) -->
+    <message name="ping">
+        <part name="parameters" element="tns:ping" />
+    </message>
+    <message name="pingResponse">
+        <part name="parameters" element="tns:pingResponse" />
+    </message>
+
+    <message name="requestJob">
+        <part name="parameters" element="tns:requestJob" />
+    </message>
+    <message name="requestJobResponse">
+        <part name="parameters" element="tns:requestJobResponse" />
+    </message>
+
+    <message name="decideJob">
+        <part name="parameters" element="tns:decideJob" />
+    </message>
+    <message name="decideJobResponse">
+        <part name="parameters" element="tns:decideJobResponse" />
+    </message>
+
+    <message name="jobStatus">
+        <part name="parameters" element="tns:jobStatus" />
+    </message>
+    <message name="jobStatusResponse">
+        <part name="parameters" element="tns:jobStatusResponse" />
+    </message>
+
+    <message name="listJobs">
+        <part name="parameters" element="tns:listJobs" />
+    </message>
+    <message name="listJobsResponse">
+        <part name="parameters" element="tns:listJobsResponse" />
+    </message>
+
+    <message name="clearJobs">
+        <part name="parameters" element="tns:clearJobs" />
+    </message>
+    <message name="clearJobsResponse">
+        <part name="parameters" element="tns:clearJobsResponse" />
+    </message>
+
+    <message name="BadLocationFault">
+        <part name="fault" element="tns:BadLocationFault" />
+    </message>
+    <message name="BadPriceFault">
+        <part name="fault" element="tns:BadPriceFault" />
+    </message>
+    <message name="BadJobFault">
+        <part name="fault" element="tns:BadJobFault" />
+    </message>
+
+    <!-- Port Type (Interface) -->
+    <portType name="TransporterPortType">
+        <operation name="ping">
+            <input wsam:Action="http://ws.transporter.upa.pt/TransporterPort/pingRequest"
+                message="tns:ping" />
+            <output wsam:Action="http://ws.transporter.upa.pt/TransporterPort/pingResponse"
+                message="tns:pingResponse" />
+        </operation>
+
+        <operation name="requestJob">
+            <input
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/requestJobRequest"
+                message="tns:requestJob" />
+            <output
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/requestJobResponse"
+                message="tns:requestJobResponse" />
+            <fault message="tns:BadLocationFault" name="BadLocationFault"
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/requestJob/Fault/BadLocationFault" />
+            <fault message="tns:BadPriceFault" name="BadPriceFault"
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/requestJob/Fault/BadPriceFault" />
+        </operation>
+
+        <operation name="decideJob">
+            <input
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/decideJobRequest"
+                message="tns:decideJob" />
+            <output
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/decideJobResponse"
+                message="tns:decideJobResponse" />
+            <fault message="tns:BadJobFault" name="BadJobFault"
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/decideJob/Fault/BadJobFault" />
+        </operation>
+
+        <operation name="jobStatus">
+            <input
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/jobStatusRequest"
+                message="tns:jobStatus" />
+            <output
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/jobStatusResponse"
+                message="tns:jobStatusResponse" />
+        </operation>
+
+        <operation name="listJobs">
+            <input
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/listJobsRequest"
+                message="tns:listJobs" />
+            <output
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/listJobsResponse"
+                message="tns:listJobsResponse" />
+        </operation>
+
+        <operation name="clearJobs">
+            <input
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/clearJobsRequest"
+                message="tns:clearJobs" />
+            <output
+                wsam:Action="http://ws.transporter.upa.pt/TransporterPort/clearJobsResponse"
+                message="tns:clearJobsResponse" />
+        </operation>
+    </portType>
+
+    <!-- SOAP/HTTP Binding -->
+    <binding name="TransporterPortSoapHttpBinding" type="tns:TransporterPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+            style="document" />
+
+        <operation name="ping">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+
+        <operation name="requestJob">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="BadLocationFault">
+                <soap:fault name="BadLocationFault" use="literal" />
+            </fault>
+            <fault name="BadPriceFault">
+                <soap:fault name="BadPriceFault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="decideJob">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="BadJobFault">
+                <soap:fault name="BadJobFault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="jobStatus">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+
+        <operation name="listJobs">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+
+        <operation name="clearJobs">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+    </binding>
+
+    <!-- Service -->
+    <service name="TransporterService">
+        <port name="TransporterPort" binding="tns:TransporterPortSoapHttpBinding">
+            <soap:address location="http://host:port/transporter-ws/endpoint" />
+        </port>
+    </service>
+
+</definitions>

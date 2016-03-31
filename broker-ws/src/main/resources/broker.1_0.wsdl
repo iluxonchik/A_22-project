@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    WSDL contract for a UPA Broker service
+
+    This WSDL defines the operations provided by the Web Service
+    and should not be modified.
+
+    For more information, consult sections
+    wsdl:service, wsdl:portType, wsdl:types and wsdl:binding below
+-->
+
+<definitions
+    xmlns="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" 
+    xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+    xmlns:tns="http://ws.broker.upa.pt/"
+    targetNamespace="http://ws.broker.upa.pt/" 
+    name="BrokerWebService">
+
+    <!-- Data type definitions -->
+    <types>
+        <xs:schema version="1.0"
+            targetNamespace="http://ws.broker.upa.pt/">
+        
+            <xs:complexType name="transportView">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" minOccurs="0" />
+                    <xs:element name="origin" type="xs:string" minOccurs="0" />
+                    <xs:element name="destination" type="xs:string" minOccurs="0" />
+                    <xs:element name="price" type="xs:int" minOccurs="0" />
+                    <xs:element name="transporterCompany" type="xs:string" minOccurs="0" />
+                    <xs:element name="state" type="tns:transportStateView" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+        
+            <xs:simpleType name="transportStateView">
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="REQUESTED" />
+                    <xs:enumeration value="BUDGETED" />
+                    <xs:enumeration value="FAILED" />
+                    <xs:enumeration value="BOOKED" />
+                    <xs:enumeration value="HEADING" />
+                    <xs:enumeration value="ONGOING" />
+                    <xs:enumeration value="COMPLETED" />
+                </xs:restriction>
+            </xs:simpleType>
+        
+        
+            <xs:complexType name="ping">
+                <xs:sequence>
+                    <xs:element name="name" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="ping" type="tns:ping" />
+        
+            <xs:complexType name="pingResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="pingResponse" type="tns:pingResponse" />
+        
+        
+            <xs:complexType name="requestTransport">
+                <xs:sequence>
+                    <xs:element name="origin" type="xs:string" minOccurs="0" />
+                    <xs:element name="destination" type="xs:string" minOccurs="0" />
+                    <xs:element name="price" type="xs:int" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="requestTransport" type="tns:requestTransport" />
+        
+            <xs:complexType name="requestTransportResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="requestTransportResponse" type="tns:requestTransportResponse" />
+        
+        
+            <xs:complexType name="viewTransport">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="viewTransport" type="tns:viewTransport" />
+        
+            <xs:complexType name="viewTransportResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="tns:transportView" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="viewTransportResponse" type="tns:viewTransportResponse" />
+        
+
+            <xs:complexType name="listTransports">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:element name="listTransports" type="tns:listTransports" />
+        
+            <xs:complexType name="listTransportsResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="tns:transportView" minOccurs="0" maxOccurs="unbounded" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="listTransportsResponse" type="tns:listTransportsResponse" />
+        
+        
+            <xs:complexType name="clearTransports">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:element name="clearTransports" type="tns:clearTransports" />
+        
+            <xs:complexType name="clearTransportsResponse">
+                <xs:sequence />
+            </xs:complexType>
+            <xs:element name="clearTransportsResponse" type="tns:clearTransportsResponse" />
+        
+        
+            <xs:complexType name="UnknownLocationFault">
+                <xs:sequence>
+                    <xs:element name="location" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="UnknownLocationFault" type="tns:UnknownLocationFault" />
+        
+            <xs:complexType name="InvalidPriceFault">
+                <xs:sequence>
+                    <xs:element name="price" type="xs:int" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="InvalidPriceFault" type="tns:InvalidPriceFault" />
+        
+            <xs:complexType name="UnavailableTransportFault">
+                <xs:sequence>
+                    <xs:element name="origin" type="xs:string" minOccurs="0" />
+                    <xs:element name="destination" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="UnavailableTransportFault" type="tns:UnavailableTransportFault" />
+        
+            <xs:complexType name="UnavailableTransportPriceFault">
+                <xs:sequence>
+                    <xs:element name="bestPriceFound" type="xs:int" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="UnavailableTransportPriceFault" type="tns:UnavailableTransportPriceFault" />
+
+            <xs:complexType name="UnknownTransportFault">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="UnknownTransportFault" type="tns:UnknownTransportFault" />
+        
+        </xs:schema>
+    </types>
+
+    <!--  Messages (use elements defined in the schema) -->
+    <message name="ping">
+        <part name="parameters" element="tns:ping" />
+    </message>
+    <message name="pingResponse">
+        <part name="parameters" element="tns:pingResponse" />
+    </message>
+
+    <message name="requestTransport">
+        <part name="parameters" element="tns:requestTransport" />
+    </message>
+    <message name="requestTransportResponse">
+        <part name="parameters" element="tns:requestTransportResponse" />
+    </message>
+
+    <message name="viewTransport">
+        <part name="parameters" element="tns:viewTransport" />
+    </message>
+    <message name="viewTransportResponse">
+        <part name="parameters" element="tns:viewTransportResponse" />
+    </message>
+
+    <message name="listTransports">
+        <part name="parameters" element="tns:listTransports" />
+    </message>
+    <message name="listTransportsResponse">
+        <part name="parameters" element="tns:listTransportsResponse" />
+    </message>
+
+    <message name="clearTransports">
+        <part name="parameters" element="tns:clearTransports" />
+    </message>
+    <message name="clearTransportsResponse">
+        <part name="parameters" element="tns:clearTransportsResponse" />
+    </message>
+
+    <message name="UnknownLocationFault">
+        <part name="fault" element="tns:UnknownLocationFault" />
+    </message>
+    <message name="InvalidPriceFault">
+        <part name="fault" element="tns:InvalidPriceFault" />
+    </message>
+    <message name="UnavailableTransportFault">
+        <part name="fault" element="tns:UnavailableTransportFault" />
+    </message>
+    <message name="UnavailableTransportPriceFault">
+        <part name="fault" element="tns:UnavailableTransportPriceFault" />
+    </message>
+    <message name="UnknownTransportFault">
+        <part name="fault" element="tns:UnknownTransportFault" />
+    </message>
+
+    <!-- Port Type (Interface) -->
+    <portType name="BrokerPortType">
+
+        <operation name="ping">
+            <input wsam:Action="http://ws.broker.upa.pt/BrokerPort/pingRequest"
+                message="tns:ping" />
+            <output wsam:Action="http://ws.broker.upa.pt/BrokerPort/pingResponse"
+                message="tns:pingResponse" />
+        </operation>
+
+        <operation name="requestTransport">
+            <input
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/requestTransportRequest"
+                message="tns:requestTransport" />
+            <output
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/requestTransportResponse"
+                message="tns:requestTransportResponse" />
+            <fault message="tns:UnknownLocationFault" name="UnknownLocationFault"
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/requestTransport/Fault/UnknownLocationFault" />
+            <fault message="tns:InvalidPriceFault" name="InvalidPriceFault"
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/requestTransport/Fault/InvalidPriceFault" />
+            <fault message="tns:UnavailableTransportFault" name="UnavailableTransportFault"
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/requestTransport/Fault/UnavailableTransportFault" />
+            <fault message="tns:UnavailableTransportPriceFault" name="UnavailableTransportPriceFault"
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/requestTransport/Fault/UnavailableTransportPriceFault" />
+        </operation>
+
+        <operation name="viewTransport">
+            <input
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/viewTransportRequest"
+                message="tns:viewTransport" />
+            <output
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/viewTransportResponse"
+                message="tns:viewTransportResponse" />
+            <fault message="tns:UnknownTransportFault" name="UnknownTransportFault"
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/viewTransport/Fault/UnknownTransportFault" />
+        </operation>
+
+
+        <operation name="listTransports">
+            <input
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/listTransportsRequest"
+                message="tns:listTransports" />
+            <output
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/listTransportsResponse"
+                message="tns:listTransportsResponse" />
+        </operation>
+
+        <operation name="clearTransports">
+            <input
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/clearTransportsRequest"
+                message="tns:clearTransports" />
+            <output
+                wsam:Action="http://ws.broker.upa.pt/BrokerPort/clearTransportsResponse"
+                message="tns:clearTransportsResponse" />
+        </operation>
+    </portType>
+
+    <!-- SOAP/HTTP Binding -->
+    <binding name="BrokerPortSoapHttpBinding" type="tns:BrokerPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http"
+            style="document" />
+
+        <operation name="ping">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+
+        <operation name="requestTransport">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="UnknownLocationFault">
+                <soap:fault name="UnknownLocationFault" use="literal" />
+            </fault>
+            <fault name="InvalidPriceFault">
+                <soap:fault name="InvalidPriceFault" use="literal" />
+            </fault>
+            <fault name="UnavailableTransportFault">
+                <soap:fault name="UnavailableTransportFault"
+                    use="literal" />
+            </fault>
+            <fault name="UnavailableTransportPriceFault">
+                <soap:fault name="UnavailableTransportPriceFault"
+                    use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="viewTransport">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+            <fault name="UnknownTransportFault">
+                <soap:fault name="UnknownTransportFault" use="literal" />
+            </fault>
+        </operation>
+
+        <operation name="listTransports">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+
+        <operation name="clearTransports">
+            <soap:operation soapAction="" />
+            <input>
+                <soap:body use="literal" />
+            </input>
+            <output>
+                <soap:body use="literal" />
+            </output>
+        </operation>
+    </binding>
+
+    <service name="BrokerService">
+        <port name="BrokerPort" binding="tns:BrokerPortSoapHttpBinding">
+            <soap:address location="http://host:port/broker-ws/endpoint" />
+        </port>
+    </service>
+
+</definitions>
