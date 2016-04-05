@@ -1,18 +1,16 @@
 # Projeto de Sistemas Distribuídos 2015-2016 #
 
-Grupo de SD ... - Campus ...
-*(preencher com número do grupo de SD no Fénix e depois apagar esta linha)*
+Grupo de SD 022 - Campus Alameda
 
-... ... ...
+Jorge Heleno       número: 79042 email: jorge.heleno@tecnico.ulisboa.pt
 
-... ... ...
+Nuno Silva         número: 78454 email: nuno.m.ribeiro.silva@tecnico.ulisboa.pt
 
-... ... ...
-*(preencher com nome, número e email de membro do grupo e depois apagar esta linha)*
+Illya Gerasymchuk  número: 78134 email: illya.gerasymchuk@tecnico.ulisboa.pt
 
 
 Repositório:
-[tecnico-distsys/C_XX-project](https://github.com/tecnico-distsys/C_XX-project/)
+[tecnico-distsys/A_22-project](https://github.com/tecnico-distsys/A_22-project/)
 
 -------------------------------------------------------------------------------
 
