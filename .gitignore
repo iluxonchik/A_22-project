@@ -107,3 +107,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+# We don't want ItelliJ files here at all
+.idea/
+*.iml
