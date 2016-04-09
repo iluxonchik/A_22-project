@@ -25,7 +25,7 @@
         <wsdl.directory>src/main/resources</wsdl.directory>
         <wsdl.filename>transporter.1_0.wsdl</wsdl.filename>
 
-        <mainclass>pt.upa.transporter.TransporterApplication</mainclass>
+        <mainclass>pt.upa.transporter.TransporterMain</mainclass>
 
         <!-- instance number - redefine using -D option - e.g. mvn -Dws.i=2 exec:java -->
         <ws.i>1</ws.i>

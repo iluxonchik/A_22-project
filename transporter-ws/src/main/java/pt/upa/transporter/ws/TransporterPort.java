@@ -1,7 +1,16 @@
 package pt.upa.transporter.ws;
 
+import javax.jws.WebService;
 import java.util.List;
 
+@WebService(
+        endpointInterface="pt.upa.transporter.ws.TransporterPort",
+        wsdlLocation = "transporter.1_0.wsdl",
+        name = "Transporter",
+        portName = "TransporterPort",
+        targetNamespace="http://ws.transporter.upa.pt/",
+        serviceName = "TransporterService"
+)
 public class TransporterPort implements TransporterPortType {
 
 	@Override
