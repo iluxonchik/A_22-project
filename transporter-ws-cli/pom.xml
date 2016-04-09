@@ -4,7 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <groupId>pt.upa.A22</groupId>
+    <!-- Please replace 'cxx' below with 
+        your c (campus) with a (Alameda) / t (Tagus); and 
+        your group number with two digits.
+        Then delete this comment. -->
+    <groupId>pt.upa.cxx</groupId>
     <artifactId>transporter-ws-cli</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -23,7 +27,7 @@
 
         <mainclass>pt.upa.transporter.TransporterClientApplication</mainclass>
 
-        <ws.name>UpaTransporter1</ws.name>
+        <ws.name>UpaTransporter</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>
     </properties>
 
@@ -47,12 +51,6 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
-        </dependency>
-        <!-- UDDI-Naming -->
-        <dependency>
-            <groupId>pt.ulisboa.tecnico.sdis</groupId>
-            <artifactId>uddi-naming</artifactId>
-            <version>1.0</version>
         </dependency>
     </dependencies>
 
@@ -124,8 +122,7 @@
                     <killAfter>-1</killAfter>
                     <mainClass>${mainclass}</mainClass>
                     <arguments>
-                        <argument>${uddi.url}</argument>
-                        <argument>${ws.name}</argument>
+                        <argument>${ws.url}</argument>
                     </arguments>
                 </configuration>
             </plugin>
