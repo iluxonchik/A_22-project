@@ -8,7 +8,7 @@
         your c (campus) with a (Alameda) / t (Tagus); and 
         your group number with two digits.
         Then delete this comment. -->
-    <groupId>pt.upa.cxx</groupId>
+    <groupId>pt.upa.a22</groupId>
     <artifactId>transporter-ws-cli</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
