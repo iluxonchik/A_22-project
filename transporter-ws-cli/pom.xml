@@ -23,7 +23,7 @@
 
         <mainclass>pt.upa.transporter.TransporterClientApplication</mainclass>
 
-        <ws.name>UpaTransporter</ws.name>
+        <ws.name>UpaTransporter1</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>
     </properties>
 
@@ -124,7 +124,8 @@
                     <killAfter>-1</killAfter>
                     <mainClass>${mainclass}</mainClass>
                     <arguments>
-                        <argument>${ws.url}</argument>
+                        <argument>${uddi.url}</argument>
+                        <argument>${ws.name}</argument>
                     </arguments>
                 </configuration>
             </plugin>
