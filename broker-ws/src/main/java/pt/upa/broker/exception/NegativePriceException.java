@@ -1,4 +1,4 @@
-package pt.upa.transporter.exception;
+package pt.upa.broker.exception;
 
 public final class NegativePriceException extends Exception {
     private static final String DEFAULT_MSG = "Price cannot be lower than 0.";

@@ -1,4 +1,4 @@
-package pt.upa.transporter.exception;
+package pt.upa.broker.exception;
 
 public final class OriginUnknownException extends Exception {
     private static final String DEFAULT_MSG = "The provided origin is unknown.";
