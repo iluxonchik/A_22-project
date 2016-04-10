@@ -21,17 +21,18 @@ Repositório:
 
 [0] Iniciar sistema operativo
 
-Indicar Windows ou Linux
-*(escolher um dos dois, que esteja disponível nos laboratórios, e depois apagar esta linha)*
+**Linux**
 
 
 [1] Iniciar servidores de apoio
 
-JUDDI:
-```
-...
-```
+- JUDDI:
 
+  Nos laboratórios da  [RNL](https://rnl.tecnico.ulisboa.pt/), correr
+  ```
+  $ juddi-startup
+  ```
+  para iniciar o jUDDI. A interface de controlo fica disponível em [http://localhost:9090/](http://localhost:9090/).
 
 [2] Criar pasta temporária
 
