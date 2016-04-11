@@ -18,6 +18,7 @@ public class TransporterPort implements TransporterPortType {
 	private final String name;
     private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static BadPriceFault badPriceFault; // to avoid creating multiple instances; lazy instantiation
+    private static BadJobFault badJobFault; // to avoid creating multiple instances; lazy instantiation
     private static Random rand = new Random();
 
     private static final int PRICE_UPPER_LIM = 100;
@@ -118,11 +119,41 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
 	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
-		// TODO Auto-generated method stub
-		return null;
+        checkJob(id);
+        TransporterJob job = jobs.get(id); // null check done in method above
+        if (accept) {
+            job.nextJobState();
+            // TODO: start timer
+        } else {
+            job.rejectJob();
+        }
+		return job;
 	}
 
-	@Override
+    /**
+     * Checks if a job id maps to a valid job.
+     * @param id job id
+     * @throws BadJobFault_Exception
+     */
+    private void checkJob(String id) throws BadJobFault_Exception {
+        if (!jobs.containsKey(id)) {
+            if (badJobFault == null) {
+                badJobFault = new BadJobFault();
+        }
+        badJobFault.setId(id);
+        throw new BadJobFault_Exception("'" + id + "' is an invalid job id", badJobFault);
+        }
+
+        if (jobs.get(id) == null) {
+            if (badJobFault == null) {
+                badJobFault = new BadJobFault();
+            }
+            badJobFault.setId(id);
+            throw new BadJobFault_Exception("'" + id + "' maps to a null job", badJobFault);
+        }
+    }
+
+    @Override
 	public JobView jobStatus(String id) {
 		// TODO Auto-generated method stub
 		return null;
