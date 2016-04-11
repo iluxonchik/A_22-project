@@ -1,5 +1,7 @@
 package pt.upa.shared;
 
+import pt.upa.shared.exception.InvalidTransporterNameException;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -56,12 +58,17 @@ public class Region {
      * @return true if the transporter operates in the specified region, false otherwise
      */
     public static boolean isKnownByTransporter(String name, String value) {
+        return (isEvenTransporter(name)) ? isKnownByEvenTransporter(value) : isKnownByOddTransporter(value);
+    }
+
+    public static boolean isEvenTransporter(String name) {
         Pattern p = Pattern.compile("[0-9]+$");
         Matcher m = p.matcher(name);
         if (m.find()) {
             int number = Integer.valueOf(m.group());
-            return (number % 2 == 0) ? isKnownByEvenTransporter(value) : isKnownByOddTransporter(value);
+            return number % 2 == 0;
+        } else {
+            throw new InvalidTransporterNameException("'" + name + "' is not a valid name for a transporter.");
         }
-        return false; // TODO: might consider throwing an InvalidTransporterNameException
     }
 }
