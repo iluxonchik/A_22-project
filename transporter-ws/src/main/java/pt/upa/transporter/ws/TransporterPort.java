@@ -1,6 +1,7 @@
 package pt.upa.transporter.ws;
 
 import javax.jws.WebService;
+import javax.xml.ws.Endpoint;
 import java.util.List;
 
 @WebService(
@@ -12,17 +13,27 @@ import java.util.List;
         serviceName = "TransporterService"
 )
 public class TransporterPort implements TransporterPortType {
+	private final String name;
+
+    public TransporterPort() {
+        // required ctor without arguments
+        name = null;
+    }
+
+	public TransporterPort(String name) {
+        this.name = name;
+	}
 
 	@Override
 	public String ping(String name) {
 		// TODO Auto-generated method stub
-		return "Hello-Test";
+		return "Hello " + name + "!";
 	}
 
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
-		// TODO Auto-generated method stub
+        // TODO
 		return null;
 	}
 
