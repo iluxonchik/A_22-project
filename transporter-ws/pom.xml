@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <groupId>pt.upa.A22</groupId>
+    <groupId>pt.upa.a22</groupId>
     <artifactId>transporter-ws</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -60,6 +60,13 @@
             <groupId>pt.ulisboa.tecnico.sdis</groupId>
             <artifactId>uddi-naming</artifactId>
             <version>1.0</version>
+        </dependency>
+        <!-- Shared code module -->
+        <dependency>
+            <groupId>pt.upa.a22</groupId>
+            <artifactId>shared</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

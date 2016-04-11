@@ -4,10 +4,6 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <!-- Please replace 'cxx' below with 
-        your c (campus) with a (Alameda) / t (Tagus); and 
-        your group number with two digits.
-        Then delete this comment. -->
     <groupId>pt.upa.a22</groupId>
     <artifactId>broker-ws-cli</artifactId>
     <version>1.0-SNAPSHOT</version>

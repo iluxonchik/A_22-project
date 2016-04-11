@@ -3,11 +3,6 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <!-- http://maven.apache.org/pom.html#Quick_Overview -->
-
-    <!-- Please replace 'cxx' below with 
-        your c (campus) with a (Alameda) / t (Tagus); and 
-        your group number with two digits.
-        Then delete this comment. -->
     <groupId>pt.upa.a22</groupId>
     <artifactId>broker-ws</artifactId>
     <version>1.0-SNAPSHOT</version>
@@ -53,6 +48,13 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+        <!-- Shared code module -->
+        <dependency>
+            <groupId>pt.upa.a22</groupId>
+            <artifactId>shared</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
