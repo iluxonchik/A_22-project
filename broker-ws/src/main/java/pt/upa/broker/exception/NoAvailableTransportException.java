@@ -1,6 +1,6 @@
 package pt.upa.broker.exception;
 
-public class NoAvailableTransportException extends Exception {
+public class NoAvailableTransportException extends BrokerException {
     private static final String DEFAULT_MSG = "No available transport from the specified origin " +
                                                                             "to the specified destination found.";
 

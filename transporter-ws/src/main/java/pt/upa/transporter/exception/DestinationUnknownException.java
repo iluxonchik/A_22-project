@@ -1,6 +1,6 @@
 package pt.upa.transporter.exception;
 
-public final class DestinationUnknownException extends Exception {
+public final class DestinationUnknownException extends TransporterException {
     private static final String DEFAULT_MSG = "The provided destination is unknown.";
 
     public DestinationUnknownException(String msg) { super(msg); }
