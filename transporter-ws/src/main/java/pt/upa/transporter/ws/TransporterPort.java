@@ -155,8 +155,13 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
 	public JobView jobStatus(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: not the best programming practice... Refactor if there is time
+        try {
+            checkJob(id);
+        } catch (BadJobFault_Exception e) {
+            return null;
+        }
+		return jobs.get(id);
 	}
 
 	@Override
