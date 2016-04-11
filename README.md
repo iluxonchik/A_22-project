@@ -69,6 +69,12 @@ cd ...
 mvn clean install
 ```
 
+- Biblioteca com código partilhado
+
+  ```
+  cd shared
+  mvn clean install
+  ```
 
 -------------------------------------------------------------------------------
 
