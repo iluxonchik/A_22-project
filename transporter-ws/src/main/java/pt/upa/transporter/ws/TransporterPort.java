@@ -5,6 +5,7 @@ import pt.upa.transporter.domain.TransporterJob;
 
 import javax.jws.WebService;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @WebService(
         endpointInterface="pt.upa.transporter.ws.TransporterPort",
@@ -15,11 +16,28 @@ import java.util.*;
         serviceName = "TransporterService"
 )
 public class TransporterPort implements TransporterPortType {
+    private class JobTimer extends TimerTask {
+        public static final int MAX_TIMER_VAL = 5;
+        private final TransporterJob job;
+
+        public JobTimer(TransporterJob job) {
+            this.job = job;
+        }
+
+        @Override
+        public void run() {
+            job.nextJobState();
+            if (!job.isCompleted()) {
+                timer.schedule(this, (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
+            }
+        }
+    }
 	private final String name;
     private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static BadPriceFault badPriceFault; // to avoid creating multiple instances; lazy instantiation
     private static BadJobFault badJobFault; // to avoid creating multiple instances; lazy instantiation
-    private static Random rand = new Random();
+    private static final Random rand = new Random();
+    private static final Timer timer = new Timer();
 
     private static final int PRICE_UPPER_LIM = 100;
     private static final int PRICE_LOWER_LIM = 10;
@@ -123,12 +141,16 @@ public class TransporterPort implements TransporterPortType {
         TransporterJob job = jobs.get(id); // null check done in method above
         if (accept) {
             job.nextJobState();
-            // TODO: start timer
+            startTimer(job);
         } else {
             job.rejectJob();
         }
 		return job;
 	}
+
+    private void startTimer(TransporterJob job) {
+        timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(JobTimer.MAX_TIMER_VAL)) * 1000);
+    }
 
     /**
      * Checks if a job id maps to a valid job.
@@ -177,7 +199,5 @@ public class TransporterPort implements TransporterPortType {
     private void addJob(TransporterJob job) {
         jobs.put(job.getJobIdentifier(), job);
     }
-
-	// TODO
 
 }
