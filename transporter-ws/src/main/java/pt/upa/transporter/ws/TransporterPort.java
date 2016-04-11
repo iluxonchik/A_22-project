@@ -1,5 +1,7 @@
 package pt.upa.transporter.ws;
 
+import pt.upa.shared.Region;
+
 import javax.jws.WebService;
 import javax.xml.ws.Endpoint;
 import java.util.List;
@@ -33,7 +35,10 @@ public class TransporterPort implements TransporterPortType {
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
-        // TODO
+        if (!Region.isKnownRegion(origin)) {
+
+
+        }
 		return null;
 	}
 
