@@ -166,8 +166,7 @@ public class TransporterPort implements TransporterPortType {
 
 	@Override
 	public List<JobView> listJobs() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayList<>(jobs.values());
 	}
 
 	@Override
