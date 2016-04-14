@@ -1,7 +1,7 @@
 package pt.upa.transporter.ws.cli;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.upa.transporter.TransporterClientException;
+import pt.upa.transporter.exception.TransporterClientException;
 import pt.upa.transporter.ws.*;
 
 import javax.xml.registry.JAXRException;
