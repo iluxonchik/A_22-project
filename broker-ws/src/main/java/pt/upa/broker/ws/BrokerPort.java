@@ -1,14 +1,12 @@
 package pt.upa.broker.ws;
 
+import pt.upa.broker.domain.Broker;
+import pt.upa.broker.domain.BrokerTransportView;
 import pt.upa.shared.Region;
 
 import javax.jws.WebService;
-import javax.xml.registry.JAXRException;
 
-import java.util.Collection;
 import java.util.List;
-
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
 
 @WebService(
@@ -22,8 +20,8 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 public class BrokerPort implements BrokerPortType {
     private static UnknownLocationFault unknownLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static InvalidPriceFault invalidPriceFault; // to avoid creating multiple instances; lazy instantiation
-    private static final String TRANSPORTER_WLDCRT = "UpaTransporter%";
-    
+    private final Broker broker;
+
     private final String uddiUrl, wsName, wsUrl;
 
     public BrokerPort() { 
@@ -32,9 +30,10 @@ public class BrokerPort implements BrokerPortType {
     }
     
     public BrokerPort(String uddiUrl, String wsName, String wsUrl) {
-    	this.uddiUrl = uddiUrl;
-    	this.wsName = wsName;
-    	this.wsUrl = wsUrl;
+        this.broker = new Broker(uddiUrl);
+        this.uddiUrl = uddiUrl;
+        this.wsName = wsName;
+        this.wsUrl = wsUrl;
     }
     
     @Override
@@ -48,10 +47,18 @@ public class BrokerPort implements BrokerPortType {
             UnknownLocationFault_Exception {
 
         checkArguments(origin, destination, price);
-        // TODO: check if there is an available transport from origin to destination, contact Transporters for that
-        
 
-        return null; // TODO: return transport identifier
+        BrokerTransportView tw = broker.getCheapestTransporter(origin, destination, price);
+        if(tw == null) {
+            // no offer for goal price
+            if (invalidPriceFault == null) {
+                invalidPriceFault = new InvalidPriceFault();
+            }
+            invalidPriceFault.setPrice(price);
+            throw new InvalidPriceFault_Exception("No offers for selected price range", invalidPriceFault);
+        }
+
+        return tw.getId(); // offer identifier on Broker's side. NOTE: different from Transporter's identifier
     }
 
     private void checkArguments(String origin, String destination, int price) throws UnknownLocationFault_Exception, InvalidPriceFault_Exception {
@@ -90,13 +97,6 @@ public class BrokerPort implements BrokerPortType {
                     invalidPriceFault);
         }
     }
-    
-  private Collection<String>  getTransportersList() throws JAXRException {
-    	UDDINaming naming = new UDDINaming(uddiUrl);
-    	return naming.list(TRANSPORTER_WLDCRT);
-  }
-  
- 
 
     @Override
     public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
