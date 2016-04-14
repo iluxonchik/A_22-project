@@ -6,7 +6,7 @@ import java.util.List;
 public class BrokerPort implements pt.upa.broker.ws.BrokerPortType {
     @Override
     public String ping(String name) {
-        return null;
+        return "Hello " + name + " !";
     }
 
     @Override
