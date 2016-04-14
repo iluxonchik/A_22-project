@@ -125,7 +125,7 @@ public class TransporterPort implements TransporterPortType {
         }
 
         if (price < 0) {
-            if (badLocationFault == null) {
+            if (badPriceFault == null) {
                 badPriceFault = new BadPriceFault();
             }
             badPriceFault.setPrice(price);
