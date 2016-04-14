@@ -177,7 +177,7 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
 	public JobView jobStatus(String id) {
-		// TODO: not the best programming practice... Refactor if there is time
+		// TODO: not the best programming practice... Refractor if there is time
         try {
             checkJob(id);
         } catch (BadJobFault_Exception e) {

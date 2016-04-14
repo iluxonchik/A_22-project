@@ -3,7 +3,13 @@ package pt.upa.broker.ws;
 import pt.upa.shared.Region;
 
 import javax.jws.WebService;
+import javax.xml.registry.JAXRException;
+
+import java.util.Collection;
 import java.util.List;
+
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+
 
 @WebService(
         endpointInterface="pt.upa.broker.ws.BrokerPort",
@@ -16,7 +22,21 @@ import java.util.List;
 public class BrokerPort implements BrokerPortType {
     private static UnknownLocationFault unknownLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static InvalidPriceFault invalidPriceFault; // to avoid creating multiple instances; lazy instantiation
+    private static final String TRANSPORTER_WLDCRT = "UpaTransporter%";
+    
+    private final String uddiUrl, wsName, wsUrl;
 
+    public BrokerPort() { 
+    	/* Required default constructor */
+    	this(null, null, null); 
+    }
+    
+    public BrokerPort(String uddiUrl, String wsName, String wsUrl) {
+    	this.uddiUrl = uddiUrl;
+    	this.wsName = wsName;
+    	this.wsUrl = wsUrl;
+    }
+    
     @Override
     public String ping(String name) {
         return "Hello " + name + " !";
@@ -29,7 +49,7 @@ public class BrokerPort implements BrokerPortType {
 
         checkArguments(origin, destination, price);
         // TODO: check if there is an available transport from origin to destination, contact Transporters for that
-
+        
 
         return null; // TODO: return transport identifier
     }
@@ -70,7 +90,13 @@ public class BrokerPort implements BrokerPortType {
                     invalidPriceFault);
         }
     }
-
+    
+  private Collection<String>  getTransportersList() throws JAXRException {
+    	UDDINaming naming = new UDDINaming(uddiUrl);
+    	return naming.list(TRANSPORTER_WLDCRT);
+  }
+  
+ 
 
     @Override
     public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
