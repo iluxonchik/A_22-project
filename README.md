@@ -37,17 +37,17 @@ Repositório:
 [2] Criar pasta temporária
 
 ```
-cd ...
-mkdir ...
+cd
+mkdir tmp_a_22
+cd tmp_a_22
 ```
 
 
 [3] Obter código fonte do projeto (versão entregue)
 
 ```
-git clone ... 
+git clone -b p1 https://github.com/tecnico-distsys/A_22-project.git
 ```
-*(colocar aqui comandos git para obter a versão entregue a partir da tag e depois apagar esta linha)*
 
 
 [4] Instalar módulos de bibliotecas auxiliares
@@ -63,16 +63,11 @@ git clone ...
   unzip uddi-naming.zip
   mvn clean install
   ```
-  
-```
-cd ...
-mvn clean install
-```
 
-- Biblioteca com código partilhado
+- Compilar biblioteca com código partilhado do projeto:
 
   ```
-  cd shared
+  cd A_22-project/shared
   mvn clean install
   ```
 
