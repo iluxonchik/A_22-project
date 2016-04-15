@@ -63,6 +63,10 @@ public class TransporterPortTest extends AbstractTest {
                 " >= 10 to an offer of 10 or less (" + 10 + ")", offer_price < 10);
     }
 
+    @Test(expected = BadPriceFault_Exception.class)
+    public void priceFail() throws BadLocationFault_Exception, BadPriceFault_Exception {
+        centerNorthPort.requestJob("Aveiro", "Porto", -1);
+    }
     @Test(expected = BadLocationFault_Exception.class)
     public void unknownLocationFail1() throws BadLocationFault_Exception, BadPriceFault_Exception {
         centerSouthPort.requestJob("Lisboa", "Porto", 100);
