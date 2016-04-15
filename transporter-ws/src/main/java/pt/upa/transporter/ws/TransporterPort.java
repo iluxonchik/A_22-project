@@ -66,7 +66,7 @@ public class TransporterPort implements TransporterPortType {
         int offerPrice;
         if (price > PRICE_UPPER_LIM) {
             return null;
-        } else if (price < 10) {
+        } else if (price <= 10) {
             offerPrice = price - 1 - rand.nextInt(PRICE_LOWER_LIM);
         } else {
             // price between PRICE_LOWER_LIM and PRICE_UPPER_LIM
