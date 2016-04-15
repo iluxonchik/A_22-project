@@ -69,6 +69,7 @@ git clone -b p1 https://github.com/tecnico-distsys/A_22-project.git
   ```
   cd A_22-project/shared
   mvn clean install
+  cd ..
   ```
 
 -------------------------------------------------------------------------------
@@ -78,15 +79,15 @@ git clone -b p1 https://github.com/tecnico-distsys/A_22-project.git
 [1] Construir e executar **servidor**
 
 ```
-cd ...-ws
+cd transporter-ws
 mvn clean install
 mvn exec:java
 ```
 
-[2] Construir **cliente** e executar testes
+[2] Construir **cliente** e executar testes (noutro terminal, na pasta do projeto)
 
 ```
-cd ...-ws-cli
+cd transporter-ws-cli
 mvn clean install
 ```
 
@@ -100,16 +101,16 @@ mvn clean install
 [1] Construir e executar **servidor**
 
 ```
-cd ...-ws
+cd broker-ws
 mvn clean install
 mvn exec:java
 ```
 
 
-[2] Construir **cliente** e executar testes
+[2] Construir **cliente** e executar testes (noutro terminal, na pasta do projeto)
 
 ```
-cd ...-ws-cli
+cd transporter-ws-cli
 mvn clean install
 ```
 
