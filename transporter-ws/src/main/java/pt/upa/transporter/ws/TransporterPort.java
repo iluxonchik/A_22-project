@@ -33,7 +33,7 @@ public class TransporterPort implements TransporterPortType {
         }
     }
 	private final String name;
-    private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
+        private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static BadPriceFault badPriceFault; // to avoid creating multiple instances; lazy instantiation
     private static BadJobFault badJobFault; // to avoid creating multiple instances; lazy instantiation
     private static final Random rand = new Random();
