@@ -3,7 +3,7 @@ package pt.upa.broker.ws.it;
 import org.junit.*;
 
 import pt.upa.broker.ws.BrokerPortType;
-import pt.upa.broker.ws.BrokerService;
+import pt.upa.broker.ws.cli.BrokerClient;
 
 import static org.junit.Assert.*;
 
@@ -13,33 +13,17 @@ import static org.junit.Assert.*;
  *  Invoked by Maven in the "verify" life-cycle phase
  *  Should invoke "live" remote servers 
  */
-public class PingIT {
-
-    // static members
-	private static BrokerPortType broker;
-
-    // one-time initialization and clean-up
-
-    @BeforeClass
-    public static void oneTimeSetUp() {
-    	//broker = new BrokerClient();
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
-
-    }
-
-
+public class PingIT extends AbstractBrokerIT {
     // members
 
 
     // initialization and clean-up for each test
-
+	@Override
     @Before
     public void setUp() {
     }
 
+	@Override
     @After
     public void tearDown() {
     }
@@ -48,10 +32,10 @@ public class PingIT {
     // tests
 
     @Test
-    public void test() {
-
-        // assertEquals(expected, actual);
-        // if the assert fails, the test fails
+    public void pingTest() {
+    	String name = "MyName";
+    	String result = broker.ping(name);
+        assertEquals("Hello " + name + " !", result);
     }
 
 }
