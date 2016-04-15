@@ -6,9 +6,16 @@ import mockit.MockUp;
 import org.junit.*;
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
+import pt.upa.transporter.ws.BadJobFault_Exception;
+import pt.upa.transporter.ws.JobStateView;
+import pt.upa.transporter.ws.JobView;
+import pt.upa.transporter.ws.cli.TransporterClient;
+
+import javax.xml.registry.JAXRException;
+
 import static org.junit.Assert.*;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created by iluxonchik on 15-04-2016.
@@ -113,17 +120,48 @@ public class BrokerPortTest {
         assertEquals(jobs.get(jobId), brokerPort.viewTransport(jobId));
     }
 
-    // tests
-
     /*
     @Test
-    public void test() {
+    public void test() throws UnavailableTransportPriceFault_Exception, UnavailableTransportFault_Exception, UnknownLocationFault_Exception, InvalidPriceFault_Exception, UnknownTransportFault_Exception {
         new MockUp<TransporterClient>() {
-            @SuppressWarnings("unused")
             @Mock
-            private void createStub() {
+            public void $init(String endpoint) {
 
             }
-        }
-    }*/
+
+            @SuppressWarnings("unused")
+            @Mock
+            public JobView requestJob(String origin, String destination, int price) {
+                JobView jw = new JobView();
+                jw.setJobPrice(price - 1);
+                jw.setJobOrigin(origin);
+                jw.setJobDestination(destination);
+                jw.setJobState(JobStateView.PROPOSED);
+                jw.setCompanyName("UpaTransporter1");
+                jw.setJobIdentifier("TRANSPORTER1_1");
+                return jw;
+            }
+
+            @SuppressWarnings("unused")
+            @Mock
+            JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
+                return null;
+            }
+        };
+
+        new MockUp<Broker>() {
+            @SuppressWarnings("unused")
+            @Mock
+            private Collection<String> getTransportersList() throws JAXRException {
+                return Arrays.asList("endpoint1");
+            }
+        };
+
+        String uid = brokerPort.requestTransport("Lisboa", "Porto", 20);
+        TransportView tw = brokerPort.viewTransport(uid);
+        assertEquals(tw.getState(), TransportStateView.BOOKED);
+    }
+    */
+
+    
 }
