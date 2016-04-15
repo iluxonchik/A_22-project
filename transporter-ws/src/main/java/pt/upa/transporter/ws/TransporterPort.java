@@ -28,7 +28,7 @@ public class TransporterPort implements TransporterPortType {
         public void run() {
             job.nextJobState();
             if (!job.isCompleted()) {
-                timer.schedule(this, (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
+                timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
             }
         }
     }
