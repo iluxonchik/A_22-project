@@ -25,7 +25,7 @@ public class TransporterPortTest extends AbstractTest {
 
 
     @Test
-    public void priceOfferTest() throws BadLocationFault_Exception, BadPriceFault_Exception {
+    public void priceOfferTestSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception {
         int even_offer = 90;
         int odd_offer = 13;
         int offer_price;
@@ -48,11 +48,29 @@ public class TransporterPortTest extends AbstractTest {
         assertTrue("Odd transporter responded with a price (" + offer_price +
                 " <= even offer price (" + even_offer + ")", offer_price > odd_offer);
 
+        // offer above 100
+        assertNull(centerSouthPort.requestJob("Lisboa", "Faro", 101));
+
+        // offer at 100
+        offer_price = centerNorthPort.requestJob("Castelo Branco", "Braga", 100).getJobPrice();
+        assertTrue("Even transporter responded with a price (" + offer_price +
+                " >= odd offer price (" + 100 + ")", offer_price < 100);
+
+
+        // offer at 10
+        offer_price = centerSouthPort.requestJob("Santarém", "Portalegre", 10).getJobPrice();
+        assertTrue("Odd transporter responded with a price (" + offer_price +
+                " >= 10 to an offer of 10 or less (" + 10 + ")", offer_price < 10);
+    }
+
+    @Test
+    public void locationFail1() {
+
     }
 	
-    @Test
-    public void test(@Mocked final TransporterPort tp){
-
+    @Test(expected = BadLocationFault_Exception.class)
+    public void unknownLocationFail() throws BadLocationFault_Exception, BadPriceFault_Exception {
+        centerSouthPort.requestJob("Lisboa", "Porto", 100);
 	}
 
 	
