@@ -20,6 +20,7 @@ import java.util.List;
 public class BrokerPort implements BrokerPortType {
     private static UnknownLocationFault unknownLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static InvalidPriceFault invalidPriceFault; // to avoid creating multiple instances; lazy instantiation
+    private static UnknownTransportFault unknownTransportFault; // to avoid creating multiple instances; lazy instantiation
     private final Broker broker;
 
     private final String uddiUrl, wsName, wsUrl;
@@ -100,7 +101,16 @@ public class BrokerPort implements BrokerPortType {
 
     @Override
     public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-        return null;
+        TransportView tw = broker.getJobById(id);
+        if (tw == null) {
+            if (unknownTransportFault == null) {
+                unknownTransportFault = new UnknownTransportFault();
+            }
+            unknownTransportFault.setId(id);
+            throw new UnknownTransportFault_Exception("Unknown tranport id: " + id, unknownTransportFault);
+        } else {
+            return tw;
+        }
     }
 
     @Override
