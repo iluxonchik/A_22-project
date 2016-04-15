@@ -63,15 +63,36 @@ public class TransporterPortTest extends AbstractTest {
                 " >= 10 to an offer of 10 or less (" + 10 + ")", offer_price < 10);
     }
 
-    @Test
-    public void locationFail1() {
-
-    }
-	
     @Test(expected = BadLocationFault_Exception.class)
-    public void unknownLocationFail() throws BadLocationFault_Exception, BadPriceFault_Exception {
+    public void unknownLocationFail1() throws BadLocationFault_Exception, BadPriceFault_Exception {
         centerSouthPort.requestJob("Lisboa", "Porto", 100);
 	}
 
-	
+    @Test(expected = BadLocationFault_Exception.class)
+    public void unknownLocationFail2() throws BadLocationFault_Exception, BadPriceFault_Exception {
+        centerNorthPort.requestJob("Evora", "Viana do Castelo", 26);
+	}
+
+    @Test
+    public void decideJobRejectSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
+        JobView offer = centerSouthPort.requestJob("Aveiro", "Beja", 45);
+        centerSouthPort.decideJob(offer.getJobIdentifier(), false);
+        offer = centerSouthPort.jobStatus(offer.getJobIdentifier());
+        assertEquals("Offer has not transitioned to rejected state", offer.getJobState(), JobStateView.REJECTED);
+    }
+
+    @Test
+    public void noSuchJobSuccess() {
+        assertNull(centerSouthPort.jobStatus("The Game"));
+    }
+
+    @Test
+    public void timerTestSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception, InterruptedException {
+        JobView offer = centerSouthPort.requestJob("Evora", "Viseu", 11);
+        centerSouthPort.decideJob(offer.getJobIdentifier(), true);
+        Thread.sleep(1000*5*3); // TODO: use a better solution that waiting 15 seconds
+        offer = centerSouthPort.jobStatus(offer.getJobIdentifier());
+        assertEquals("Timer did not make the required transitions",JobStateView.COMPLETED, offer.getJobState());
+    }
+
 }
