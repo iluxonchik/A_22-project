@@ -28,7 +28,7 @@ public class TransporterPort implements TransporterPortType {
         public void run() {
             job.nextJobState();
             if (!job.isCompleted()) {
-                timer.schedule(this, (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
+                timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
             }
         }
     }
@@ -66,7 +66,7 @@ public class TransporterPort implements TransporterPortType {
         int offerPrice;
         if (price > PRICE_UPPER_LIM) {
             return null;
-        } else if (price < 10) {
+        } else if (price <= 10) {
             offerPrice = price - 1 - rand.nextInt(PRICE_LOWER_LIM);
         } else {
             // price between PRICE_LOWER_LIM and PRICE_UPPER_LIM

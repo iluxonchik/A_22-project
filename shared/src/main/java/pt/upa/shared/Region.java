@@ -12,13 +12,13 @@ import java.util.regex.Pattern;
  * Helper class to deal with regions (destinations and origins). <br />
  *
  * <strong>North:</strong> Porto, Braga, Viana do Castelo, Vila Real, Bragança <br />
- * <strong>Center:</strong> Lisboa, Leiria, Santaŕem, Castelo Branco, Coimbra, Aveiro, Viseu, Guarda <br />
+ * <strong>Center:</strong> Lisboa, Leiria, Santarém, Castelo Branco, Coimbra, Aveiro, Viseu, Guarda <br />
  * <strong>South:</strong> Setúbal, Evora, Portalegre, Beja, Faro <br />
  */
 public class Region {
     public final static Set<String> NORTH = new HashSet<String>(Arrays.asList("Porto", "Braga", "Viana do Castelo",
             "Vila Real", "Bragança"));
-    public final static Set<String> CENTER = new HashSet<String>(Arrays.asList("Lisboa", "Leiria", "Santaŕem",
+    public final static Set<String> CENTER = new HashSet<String>(Arrays.asList("Lisboa", "Leiria", "Santarém",
             "Castelo Branco", "Coimbra", "Aveiro", "Viseu", "Guarda"));
     public final static Set<String> SOUTH = new HashSet<String>(Arrays.asList("Setúbal", "Evora", "Portalegre",
             "Beja", "Faro"));

@@ -25,7 +25,7 @@ public class TransporterPortTest extends AbstractTest {
 
 
     @Test
-    public void priceOfferTest() throws BadLocationFault_Exception, BadPriceFault_Exception {
+    public void priceOfferTestSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception {
         int even_offer = 90;
         int odd_offer = 13;
         int offer_price;
@@ -48,12 +48,55 @@ public class TransporterPortTest extends AbstractTest {
         assertTrue("Odd transporter responded with a price (" + offer_price +
                 " <= even offer price (" + even_offer + ")", offer_price > odd_offer);
 
-    }
-	
-    @Test
-    public void test(@Mocked final TransporterPort tp){
+        // offer above 100
+        assertNull(centerSouthPort.requestJob("Lisboa", "Faro", 101));
 
+        // offer at 100
+        offer_price = centerNorthPort.requestJob("Castelo Branco", "Braga", 100).getJobPrice();
+        assertTrue("Even transporter responded with a price (" + offer_price +
+                " >= odd offer price (" + 100 + ")", offer_price < 100);
+
+
+        // offer at 10
+        offer_price = centerSouthPort.requestJob("Santarém", "Portalegre", 10).getJobPrice();
+        assertTrue("Odd transporter responded with a price (" + offer_price +
+                " >= 10 to an offer of 10 or less (" + 10 + ")", offer_price < 10);
+    }
+
+    @Test(expected = BadPriceFault_Exception.class)
+    public void priceFail() throws BadLocationFault_Exception, BadPriceFault_Exception {
+        centerNorthPort.requestJob("Aveiro", "Porto", -1);
+    }
+    @Test(expected = BadLocationFault_Exception.class)
+    public void unknownLocationFail1() throws BadLocationFault_Exception, BadPriceFault_Exception {
+        centerSouthPort.requestJob("Lisboa", "Porto", 100);
 	}
 
-	
+    @Test(expected = BadLocationFault_Exception.class)
+    public void unknownLocationFail2() throws BadLocationFault_Exception, BadPriceFault_Exception {
+        centerNorthPort.requestJob("Evora", "Viana do Castelo", 26);
+	}
+
+    @Test
+    public void decideJobRejectSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
+        JobView offer = centerSouthPort.requestJob("Aveiro", "Beja", 45);
+        centerSouthPort.decideJob(offer.getJobIdentifier(), false);
+        offer = centerSouthPort.jobStatus(offer.getJobIdentifier());
+        assertEquals("Offer has not transitioned to rejected state", offer.getJobState(), JobStateView.REJECTED);
+    }
+
+    @Test
+    public void noSuchJobSuccess() {
+        assertNull(centerSouthPort.jobStatus("The Game"));
+    }
+
+    @Test
+    public void timerTestSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception, InterruptedException {
+        JobView offer = centerSouthPort.requestJob("Evora", "Viseu", 11);
+        centerSouthPort.decideJob(offer.getJobIdentifier(), true);
+        Thread.sleep(1000*5*3); // TODO: use a better solution that waiting 15 seconds
+        offer = centerSouthPort.jobStatus(offer.getJobIdentifier());
+        assertEquals("Timer did not make the required transitions",JobStateView.COMPLETED, offer.getJobState());
+    }
+
 }
