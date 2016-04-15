@@ -123,9 +123,7 @@ public class BrokerPort implements BrokerPortType {
 
     @Override
     public void clearTransports() {
-        broker.getTransporterClients()
-                .stream()
-                .forEach(c -> c.clearJobs());
+        broker.clearTransports();
     }
 
 }

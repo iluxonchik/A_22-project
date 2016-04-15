@@ -3,7 +3,10 @@ package pt.upa.broker.domain;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerException;
 import pt.upa.broker.ws.TransportView;
-import pt.upa.transporter.ws.*;
+import pt.upa.transporter.ws.BadJobFault_Exception;
+import pt.upa.transporter.ws.BadLocationFault_Exception;
+import pt.upa.transporter.ws.BadPriceFault_Exception;
+import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
 import javax.xml.registry.JAXRException;
@@ -38,7 +41,7 @@ public final class Broker {
                 try {
                     jw = client.requestJob(origin, destination, maxPrice);
                     tw.processJobOffer(jw, client);
-                } catch (BadLocationFault_Exception e ){
+                } catch (BadLocationFault_Exception e) {
                     // transporter doesn't recognize an origin or a destination, no biggie, just ignore it and proceed to the
                     // next one
                 } catch (BadPriceFault_Exception e) {
@@ -64,9 +67,10 @@ public final class Broker {
 
     private String getUID() {
         counter++;
-        return  "BROKER_" + counter;
+        return "BROKER_" + counter;
 
     }
+
     public TransportView getJobById(String id) {
         return jobs.get(id);
     }
@@ -82,5 +86,12 @@ public final class Broker {
             clients.add(btw.getClient());
         }
         return clients;
+    }
+
+    public void clearTransports() {
+        getTransporterClients()
+                .stream()
+                .forEach(c -> c.clearJobs());
+        jobs.clear();
     }
 }
