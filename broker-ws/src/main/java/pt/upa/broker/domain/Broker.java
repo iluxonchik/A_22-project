@@ -7,10 +7,7 @@ import pt.upa.transporter.ws.*;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
 import javax.xml.registry.JAXRException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * A Broker tied to a specific URL of UDDI
@@ -76,5 +73,14 @@ public final class Broker {
 
     public List<TransportView> getJobList() {
         return new ArrayList<>(jobs.values());
+    }
+
+    public Set<TransporterClient> getTransporterClients() {
+        // TODO: refactor to use Java 8 Streams
+        Set<TransporterClient> clients = new LinkedHashSet<>();
+        for (BrokerTransportView btw : jobs.values()) {
+            clients.add(btw.getClient());
+        }
+        return clients;
     }
 }

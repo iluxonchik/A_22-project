@@ -3,6 +3,7 @@ package pt.upa.broker.ws;
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
 import pt.upa.shared.Region;
+import pt.upa.transporter.ws.cli.TransporterClient;
 
 import javax.jws.WebService;
 
@@ -122,7 +123,9 @@ public class BrokerPort implements BrokerPortType {
 
     @Override
     public void clearTransports() {
-
+        broker.getTransporterClients()
+                .stream()
+                .forEach(c -> c.clearJobs());
     }
 
 }
