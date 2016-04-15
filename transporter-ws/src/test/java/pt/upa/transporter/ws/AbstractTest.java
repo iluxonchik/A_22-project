@@ -27,8 +27,4 @@ public abstract class AbstractTest {
     }
 
 
-    // tests
-
-    @Test
-    public abstract void test();
 }
