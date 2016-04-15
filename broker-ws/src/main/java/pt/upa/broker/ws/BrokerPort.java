@@ -6,6 +6,7 @@ import pt.upa.shared.Region;
 
 import javax.jws.WebService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -101,6 +102,7 @@ public class BrokerPort implements BrokerPortType {
 
     @Override
     public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
+        // NOTE: BrokerTransportView overrides getState() and contacts Transporter if it's necessary
         TransportView tw = broker.getJobById(id);
         if (tw == null) {
             if (unknownTransportFault == null) {
@@ -115,7 +117,7 @@ public class BrokerPort implements BrokerPortType {
 
     @Override
     public List<TransportView> listTransports() {
-        return null;
+        return broker.getJobList();
     }
 
     @Override

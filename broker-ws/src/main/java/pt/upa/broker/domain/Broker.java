@@ -7,8 +7,10 @@ import pt.upa.transporter.ws.*;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
 import javax.xml.registry.JAXRException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A Broker tied to a specific URL of UDDI
@@ -72,4 +74,7 @@ public final class Broker {
         return jobs.get(id);
     }
 
+    public List<TransportView> getJobList() {
+        return new ArrayList<>(jobs.values());
+    }
 }
