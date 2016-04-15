@@ -15,7 +15,7 @@ import java.util.List;
         endpointInterface="pt.upa.broker.ws.BrokerPort",
         wsdlLocation = "broker.1_0.wsdl",
         name = "Broker",
-        portName = "TransporterPort",
+        portName = "BrokerPort",
         targetNamespace="http://ws.broker.upa.pt/",
         serviceName = "BrokerService"
 )
