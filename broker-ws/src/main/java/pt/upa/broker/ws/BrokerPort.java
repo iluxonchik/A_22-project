@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @WebService(
-        endpointInterface="pt.upa.broker.ws.BrokerPort",
+        endpointInterface="pt.upa.broker.ws.BrokerPortType",
         wsdlLocation = "broker.1_0.wsdl",
         name = "Broker",
         portName = "BrokerPort",

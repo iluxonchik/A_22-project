@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @WebService(
-        endpointInterface="pt.upa.transporter.ws.TransporterPort",
+        endpointInterface="pt.upa.transporter.ws.TransporterPortType",
         wsdlLocation = "transporter.1_0.wsdl",
         name = "Transporter",
         portName = "TransporterPort",
