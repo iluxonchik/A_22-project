@@ -41,6 +41,7 @@ public class TransporterPort implements TransporterPortType {
 
     private static final int PRICE_UPPER_LIM = 100;
     private static final int PRICE_LOWER_LIM = 10;
+    private static final int MINIMUM_PRICE = 1;
     private static final String DEFAULT_NAME = "UpaTransporter1";
 
     private HashMap<String, TransporterJob> jobs = new HashMap<>();
@@ -81,12 +82,13 @@ public class TransporterPort implements TransporterPortType {
     private int computePrice(int price) {
         if ((Region.isEvenTransporter(name) && price % 2 == 0) || (!Region.isEvenTransporter(name) && price % 2 != 0)) {
             // transporter number and price have the same parity
-            return price - 1 - rand.nextInt(price);
+            price = price - 1 - rand.nextInt(price);
         } else {
             // transporter and price have distinct parities
             // NOTE: this can lead to pretty large price offers...
-            return price + 1 + rand.nextInt(Integer.MAX_VALUE - price);
+            price = price + 1 + rand.nextInt(Integer.MAX_VALUE - price);
         }
+        return (price < MINIMUM_PRICE) ? MINIMUM_PRICE : price;
     }
 
 
