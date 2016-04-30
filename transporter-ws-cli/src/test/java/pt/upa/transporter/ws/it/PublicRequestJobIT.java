@@ -210,7 +210,7 @@ public class PublicRequestJobIT extends PublicAbstractIT {
 
 		JobView jv1 = CLIENT.requestJob(CENTRO_1, SUL_1, oddReferencePrice);
 		final int price = jv1.getJobPrice();
-		assertTrue(price >= UNITARY_PRICE && price < oddReferencePrice);
+		assertTrue("Returned price was " + price, price >= UNITARY_PRICE && price < oddReferencePrice);
 	}
 
 	/**

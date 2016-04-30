@@ -101,7 +101,7 @@ public final class TransporterClient implements TransporterPortType {
 
     @Override
     public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
-        return decideJob(id, accept);
+        return port.decideJob(id, accept);
     }
 
     @Override

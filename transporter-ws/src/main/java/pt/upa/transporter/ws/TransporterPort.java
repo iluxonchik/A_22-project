@@ -2,6 +2,7 @@ package pt.upa.transporter.ws;
 
 import pt.upa.shared.Region;
 import pt.upa.transporter.domain.TransporterJob;
+import pt.upa.transporter.exception.InvalidJobStateTransitionException;
 
 import javax.jws.WebService;
 import java.util.*;
@@ -73,6 +74,8 @@ public class TransporterPort implements TransporterPortType {
             // price between PRICE_LOWER_LIM and PRICE_UPPER_LIM
             offerPrice = computePrice(price);
         }
+        if (offerPrice < MINIMUM_PRICE)
+            offerPrice = MINIMUM_PRICE;
 
         TransporterJob job = new TransporterJob(name, origin, destination, offerPrice);
         addJob(job);
@@ -142,10 +145,27 @@ public class TransporterPort implements TransporterPortType {
         checkJob(id);
         TransporterJob job = jobs.get(id); // null check done in method above
         if (accept) {
+            if (job.getJobState() == JobStateView.ACCEPTED) {
+                initBadJobFault();
+                badJobFault.setId(id);
+                throw new BadJobFault_Exception("Cannot ACCEPT the same job twice", badJobFault);
+            }
             job.nextJobState();
             startTimer(job);
         } else {
-            job.rejectJob();
+            if (job.getJobState() == JobStateView.REJECTED) {
+                initBadJobFault();
+                badJobFault.setId(id);
+                throw new BadJobFault_Exception("Cannot REJECT the same job twice", badJobFault);
+            }
+
+            try {
+                job.rejectJob();
+            } catch (InvalidJobStateTransitionException e) {
+                initBadJobFault();
+                badJobFault.setId(id);
+                throw new BadJobFault_Exception(e.getMessage(), badJobFault);
+            }
         }
 		return job;
 	}
@@ -161,17 +181,13 @@ public class TransporterPort implements TransporterPortType {
      */
     private void checkJob(String id) throws BadJobFault_Exception {
         if (!jobs.containsKey(id)) {
-            if (badJobFault == null) {
-                badJobFault = new BadJobFault();
-        }
-        badJobFault.setId(id);
-        throw new BadJobFault_Exception("'" + id + "' is an invalid job id", badJobFault);
+            initBadJobFault();
+            badJobFault.setId(id);
+            throw new BadJobFault_Exception("'" + id + "' is an invalid job id", badJobFault);
         }
 
         if (jobs.get(id) == null) {
-            if (badJobFault == null) {
-                badJobFault = new BadJobFault();
-            }
+            initBadJobFault();
             badJobFault.setId(id);
             throw new BadJobFault_Exception("'" + id + "' maps to a null job", badJobFault);
         }
@@ -200,6 +216,12 @@ public class TransporterPort implements TransporterPortType {
 
     private void addJob(TransporterJob job) {
         jobs.put(job.getJobIdentifier(), job);
+    }
+
+    private void initBadJobFault() {
+        if (this.badJobFault == null) {
+            this.badJobFault = new BadJobFault();
+        }
     }
 
 }
