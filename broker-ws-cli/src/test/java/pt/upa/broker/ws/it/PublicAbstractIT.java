@@ -5,9 +5,7 @@ import java.util.Properties;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
 import pt.upa.broker.ws.cli.BrokerClient;
-import pt.upa.broker.ws.cli.PublicBrokerClient;
 
 /**
  * Integration Test suite abstract class
@@ -17,7 +15,7 @@ public class PublicAbstractIT {
 	private static final String TEST_PROP_FILE = "/test.properties";
 
 	private static Properties PROPS;
-	protected static PublicBrokerClient CLIENT;
+	protected static BrokerClient CLIENT;
 
 	protected static int PRICE_UPPER_LIMIT = 100;
 	protected static int PRICE_SMALLEST_LIMIT = 10;
@@ -60,12 +58,10 @@ public class PublicAbstractIT {
 		String wsURL = PROPS.getProperty("ws.url");
 
 		if ("true".equalsIgnoreCase(uddiEnabled)) {
-			CLIENT = new PublicBrokerClient(uddiURL, wsName);
+			CLIENT = new BrokerClient(uddiURL, wsName);
 		} else {
-			CLIENT = new PublicBrokerClient(wsURL);
+			CLIENT = new BrokerClient(wsURL);
 		}
-		CLIENT.setVerbose(true);
-
 	}
 
 	@AfterClass

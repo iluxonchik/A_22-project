@@ -18,7 +18,7 @@ import mockit.Verifications;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerClientException;
 
-public class PublicBrokerClientTest {
+public class BrokerClientTest {
 
 	// static members
 
