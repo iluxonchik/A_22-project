@@ -60,7 +60,7 @@ public class BrokerClient implements BrokerPortType {
             }
             createStub();
         } catch (JAXRException e) {
-            throw new BrokerClientException("UDDI error: " + e.getMessage());
+            throw new BrokerClientException("UDDI error: " + e.getMessage(), e);
         }
     }
     
