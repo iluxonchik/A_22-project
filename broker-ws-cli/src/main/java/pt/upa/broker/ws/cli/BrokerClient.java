@@ -78,7 +78,7 @@ public class BrokerClient implements BrokerPortType {
     /**
      * Instantiate BrokerClient directly from an endpoint address
      *
-     * @param endpointAddress the endpoint address of the {@link pt.upa.Broker.ws.BrokerPortType}
+     * @param endpointAddress the endpoint address of the {@link pt.upa.broker.ws.BrokerPortType}
      */
     public BrokerClient(String endpointAddress) {
         uddiNaming = null;

@@ -22,10 +22,9 @@
 
         <mainclass>pt.upa.broker.BrokerApplication</mainclass>
 
-        <ws.url>http://localhost:8080/broker-ws/endpoint</ws.url>
-
-        <ws.name>UpaBroker</ws.name>
         <uddi.url>http://localhost:9090</uddi.url>
+        <ws.url>http://localhost:8080/broker-ws/endpoint</ws.url>
+        <ws.name>UpaBroker</ws.name>
     </properties>
 
     <dependencies>

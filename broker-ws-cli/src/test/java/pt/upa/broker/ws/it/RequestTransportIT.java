@@ -33,7 +33,8 @@ public class RequestTransportIT extends AbstractBrokerIT {
     // tests
 
     @Test
-    public void testTransport1() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
+    public void testTransport1() throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
+            UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
     	String origin = "Porto";
     	String destination = "Lisboa";
     	int price = 100;
