@@ -21,7 +21,7 @@ import pt.upa.transporter.exception.TransporterClientException;
 /**
  * Test suite
  */
-public class PublicTransporterClientTest {
+public class TransporterClientTest {
 
 	// static members
 

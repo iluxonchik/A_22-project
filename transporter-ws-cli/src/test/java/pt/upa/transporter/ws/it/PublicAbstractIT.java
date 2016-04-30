@@ -5,8 +5,6 @@ import java.util.Properties;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
-import pt.upa.transporter.ws.cli.PublicTransporterClient;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
 /**
@@ -18,7 +16,7 @@ public class PublicAbstractIT {
 	private static final String TEST_PROP_FILE = "/test.properties";
 
 	private static Properties PROPS;
-	protected static PublicTransporterClient CLIENT;
+	protected static TransporterClient CLIENT;
 
 	protected static final int PRICE_UPPER_LIMIT = 100;
 	protected static final int PRICE_SMALLEST_LIMIT = 10;
@@ -52,9 +50,9 @@ public class PublicAbstractIT {
 		// (UpaTransporter1).
 
 		if ("true".equalsIgnoreCase(uddiEnabled)) {
-			CLIENT = new PublicTransporterClient(uddiURL, wsName);
+			CLIENT = new TransporterClient(uddiURL, wsName);
 		} else {
-			CLIENT = new PublicTransporterClient(wsURL);
+			CLIENT = new TransporterClient(wsURL);
 		}
 		CLIENT.setVerbose(true);
 

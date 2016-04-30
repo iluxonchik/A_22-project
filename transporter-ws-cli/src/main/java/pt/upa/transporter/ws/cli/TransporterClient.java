@@ -35,6 +35,15 @@ public final class TransporterClient implements TransporterPortType {
     private BindingProvider bindingProvider;
     private Map<String, Object> requestContext;
 
+    /** output option **/
+    private boolean verbose = false;
+    public boolean isVerbose() {
+        return verbose;
+    }
+    public void setVerbose(boolean verbose) {
+        this.verbose = verbose;
+    }
+
     /**
      * Instantiate from UDDI url and wsName.
      *
