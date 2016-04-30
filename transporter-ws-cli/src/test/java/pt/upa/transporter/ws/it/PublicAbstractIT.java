@@ -54,7 +54,6 @@ public class PublicAbstractIT {
 		} else {
 			CLIENT = new TransporterClient(wsURL);
 		}
-		CLIENT.setVerbose(true);
 
 	}
 

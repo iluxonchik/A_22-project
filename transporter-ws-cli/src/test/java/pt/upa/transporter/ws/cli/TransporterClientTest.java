@@ -137,8 +137,7 @@ public class TransporterClientTest {
 			fail();
 
 		} catch (TransporterClientException e) {
-			final String expectedMessage = String.format("Service with name %s not found on UDDI at %s", wsName,
-					uddiURL);
+			final String expectedMessage = "'" + wsName + "' Not Found at " + uddiURL;
 			assertEquals(expectedMessage, e.getMessage());
 		}
 
@@ -188,9 +187,9 @@ public class TransporterClientTest {
 			fail();
 
 		} catch (TransporterClientException e) {
-			assertTrue(e.getCause() instanceof JAXRException);
-			final String expectedMessage = String.format("Client failed lookup on UDDI at %s!", uddiURL);
-			assertEquals(expectedMessage, e.getMessage());
+			assertTrue("Cause is not JAXRException", e.getCause() instanceof JAXRException);
+			final String expectedMessage = "UDDI error:";
+			assertTrue(e.getMessage().startsWith(expectedMessage));
 		}
 
 		// a "verification block"

@@ -9,6 +9,6 @@ public class TransporterClientApplication {
 
         // TODO: placeholder demo client call
         TransporterClient cli = new TransporterClient("http://localhost:9090", "UpaTransporter1");
-        cli.ping("NullPointerException");
+        System.out.println(cli.ping("NullPointerException"));
 	}
 }
