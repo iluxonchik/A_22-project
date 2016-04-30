@@ -47,7 +47,7 @@ public final class TransporterClient implements TransporterPortType {
         this.wsName = wsName;
         try {
             //TODO: replace commented out print messages with log messages
-            //System.out.printf("Contacting UDDI at %s%n", uddiURL);
+            // System.out.printf("Contacting UDDI at %s%n", uddiURL);
             uddiNaming = new UDDINaming(uddiURL);
 
             //System.out.printf("Searching for '%s'%n", name);

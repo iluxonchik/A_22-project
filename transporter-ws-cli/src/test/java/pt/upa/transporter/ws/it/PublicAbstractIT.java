@@ -10,6 +10,8 @@ import pt.upa.transporter.ws.cli.TransporterClient;
 /**
  * Integration Test suite abstract class. Test classes inherit this one to
  * better configure and prepare each test.
+ *
+ * NOTE: this assumes that there is a transporter with name "UpaTransporter1" registered in UDDI.
  */
 public class PublicAbstractIT {
 
@@ -43,7 +45,7 @@ public class PublicAbstractIT {
 		}
 		String uddiEnabled = PROPS.getProperty("uddi.enabled");
 		String uddiURL = PROPS.getProperty("uddi.url");
-		String wsName = PROPS.getProperty("ws.name");
+		String wsName = PROPS.getProperty("ws.name"); // read note in javadoc of this class
 		String wsURL = PROPS.getProperty("ws.url");
 
 		// Note: CLIENT is defined to be an odd transporter in the pom file
