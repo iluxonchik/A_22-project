@@ -11,4 +11,13 @@ public class BrokerClientException extends RuntimeException {
 	public BrokerClientException() {
 		super();
 	}
+
+	public BrokerClientException(Throwable cause) {
+		super(cause);
+	}
+
+	public BrokerClientException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 }
