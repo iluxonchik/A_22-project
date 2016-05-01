@@ -103,6 +103,7 @@ public final class Broker {
     public void clearTransports() {
         getTransporterClients()
                 .stream()
+                .filter(c -> c != null)
                 .forEach(c -> c.clearJobs());
         jobs.clear();
     }
