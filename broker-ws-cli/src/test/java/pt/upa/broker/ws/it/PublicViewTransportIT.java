@@ -32,7 +32,9 @@ public class PublicViewTransportIT extends PublicAbstractIT {
         assertEquals(vt.getState(), TransportStateView.BOOKED);
 
         int iter = 0;
-        for (int t = 0; t <= 3 * DELAY_UPPER || !tS.isEmpty(); t += TENTH_OF_SECOND) {
+        // NOTE: in the public test there was an "||" in the condition in for, but I believe that was a mistake and that
+        // it should be "&&"
+        for (int t = 0; t <= 3 * DELAY_UPPER && !tS.isEmpty(); t += TENTH_OF_SECOND) {
             System.out.println("Iteration " + iter++);
             System.out.println("t = " + t);
 

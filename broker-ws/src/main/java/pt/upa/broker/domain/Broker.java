@@ -4,6 +4,7 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerException;
 import pt.upa.broker.ws.TransportView;
 import pt.upa.broker.ws.UnavailableTransportFault_Exception;
+import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
 import pt.upa.transporter.ws.BadJobFault_Exception;
 import pt.upa.transporter.ws.BadLocationFault_Exception;
 import pt.upa.transporter.ws.BadPriceFault_Exception;
@@ -29,7 +30,7 @@ public final class Broker {
     }
 
     public BrokerTransportView getCheapestTransporter(String origin, String destination, int maxPrice)
-            throws UnavailableTransportFault_Exception {
+            throws UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception {
         JobView jw;
         BrokerTransportView chosenJob;
         BrokerTransportView tw = new BrokerTransportView(origin, destination, maxPrice, getUID());
