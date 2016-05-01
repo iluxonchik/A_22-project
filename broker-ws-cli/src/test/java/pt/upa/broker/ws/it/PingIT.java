@@ -1,29 +1,28 @@
 package pt.upa.broker.ws.it;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-import pt.upa.broker.ws.BrokerPortType;
-import pt.upa.broker.ws.cli.BrokerClient;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
- *  Integration Test 
- *  
- *  Invoked by Maven in the "verify" life-cycle phase
- *  Should invoke "live" remote servers 
+ * Integration Test
+ * <p>
+ * Invoked by Maven in the "verify" life-cycle phase
+ * Should invoke "live" remote servers
  */
 public class PingIT extends AbstractBrokerIT {
     // members
 
 
     // initialization and clean-up for each test
-	@Override
+    @Override
     @Before
     public void setUp() {
     }
 
-	@Override
+    @Override
     @After
     public void tearDown() {
     }
@@ -33,8 +32,8 @@ public class PingIT extends AbstractBrokerIT {
 
     @Test
     public void pingTest() {
-    	String name = "MyName";
-    	String result = broker.ping(name);
+        String name = "MyName";
+        String result = broker.ping(name);
         assertEquals("Hello " + name + " !", result);
     }
 

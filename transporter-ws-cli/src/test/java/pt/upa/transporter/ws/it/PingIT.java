@@ -1,27 +1,28 @@
 package pt.upa.transporter.ws.it;
 
 import org.junit.*;
-import static org.junit.Assert.*;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
+import static org.junit.Assert.assertNotNull;
+
 /**
- *  Integration Test example
- *  
- *  Invoked by Maven in the "verify" life-cycle phase
- *  Should invoke "live" remote servers 
+ * Integration Test example
+ * <p>
+ * Invoked by Maven in the "verify" life-cycle phase
+ * Should invoke "live" remote servers
  */
 public class PingIT {
 
-	private static TransporterClient client;
-    
+    private static TransporterClient client;
+
     @BeforeClass
     public static void oneTimeSetUp() {
-		client = new TransporterClient("http://localhost:9090", "UpaTransporter1");
+        client = new TransporterClient("http://localhost:9090", "UpaTransporter1");
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
-		client = null;
+        client = null;
     }
 
 
@@ -43,7 +44,7 @@ public class PingIT {
 
     @Test
     public void test() {
-		assertNotNull("ping test","Hi UpaTransporter1");
+        assertNotNull("ping test", "Hi UpaTransporter1");
     }
 
 }

@@ -7,7 +7,7 @@ import javax.xml.ws.Endpoint;
 
 public class BrokerApplication {
 
-	public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         System.out.println(BrokerApplication.class.getSimpleName() + " starting...");
 
         if (args.length < 3) {

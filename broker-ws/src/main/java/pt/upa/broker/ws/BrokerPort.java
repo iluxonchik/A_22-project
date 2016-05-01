@@ -3,20 +3,17 @@ package pt.upa.broker.ws;
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
 import pt.upa.shared.Region;
-import pt.upa.transporter.ws.cli.TransporterClient;
 
 import javax.jws.WebService;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
 @WebService(
-        endpointInterface="pt.upa.broker.ws.BrokerPortType",
+        endpointInterface = "pt.upa.broker.ws.BrokerPortType",
         wsdlLocation = "broker.1_0.wsdl",
         name = "Broker",
         portName = "BrokerPort",
-        targetNamespace="http://ws.broker.upa.pt/",
+        targetNamespace = "http://ws.broker.upa.pt/",
         serviceName = "BrokerService"
 )
 public class BrokerPort implements BrokerPortType {
@@ -28,17 +25,17 @@ public class BrokerPort implements BrokerPortType {
     private final String uddiUrl, wsName, wsUrl;
 
     public BrokerPort() {
-    	/* Required default constructor */
-    	this(null, null, null);
+        /* Required default constructor */
+        this(null, null, null);
     }
-    
+
     public BrokerPort(String uddiUrl, String wsName, String wsUrl) {
         this.broker = new Broker(uddiUrl);
         this.uddiUrl = uddiUrl;
         this.wsName = wsName;
         this.wsUrl = wsUrl;
     }
-    
+
     @Override
     public String ping(String name) {
         return "Hello " + name + " !";
@@ -52,7 +49,7 @@ public class BrokerPort implements BrokerPortType {
         checkArguments(origin, destination, price);
 
         BrokerTransportView tw = broker.getCheapestTransporter(origin, destination, price);
-        if(tw == null) {
+        if (tw == null) {
             // no offer for goal price
             if (invalidPriceFault == null) {
                 invalidPriceFault = new InvalidPriceFault();
@@ -66,7 +63,7 @@ public class BrokerPort implements BrokerPortType {
 
     private void checkArguments(String origin, String destination, int price) throws UnknownLocationFault_Exception, InvalidPriceFault_Exception {
         if (!Region.isKnownRegion(origin)) {
-            if(unknownLocationFault == null) {
+            if (unknownLocationFault == null) {
                 unknownLocationFault = new UnknownLocationFault();
                 unknownLocationFault.setLocation(origin);
             }
@@ -74,7 +71,7 @@ public class BrokerPort implements BrokerPortType {
         }
 
         if (!Region.isKnownRegion(destination)) {
-            if(unknownLocationFault == null) {
+            if (unknownLocationFault == null) {
                 unknownLocationFault = new UnknownLocationFault();
                 unknownLocationFault.setLocation(destination);
             }

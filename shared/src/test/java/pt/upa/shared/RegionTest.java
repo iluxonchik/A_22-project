@@ -1,7 +1,9 @@
 package pt.upa.shared;
 
 import org.junit.*;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class RegionTest {
 
@@ -28,7 +30,7 @@ public class RegionTest {
         assertTrue("UpaTransporter22 - Porto", Region.isKnownByTransporter("UpaTransorter22", "Porto"));
         assertTrue("OtherNamesWorkToo$#22234 - Braga", Region.isKnownByTransporter("OtherNamesWorkToo$#22234", "Braga"));
         assertFalse("UpaTransporter22 - Setúbal", Region.isKnownByTransporter("UpaTransorter22", "Setúbal"));
-        assertFalse("UpaTransporter11 - Porto" ,Region.isKnownByTransporter("UpaTransorter11", "Porto"));
+        assertFalse("UpaTransporter11 - Porto", Region.isKnownByTransporter("UpaTransorter11", "Porto"));
     }
 
 }

@@ -1,35 +1,35 @@
 package pt.upa.broker.ws.it;
 
-import org.junit.*;
-
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import pt.upa.broker.ws.BrokerPortType;
 import pt.upa.broker.ws.cli.BrokerClient;
 
-import static org.junit.Assert.*;
-
 /**
- *  Integration Test 
- *  
- *  Invoked by Maven in the "verify" life-cycle phase
- *  Should invoke "live" remote servers 
+ * Integration Test
+ * <p>
+ * Invoked by Maven in the "verify" life-cycle phase
+ * Should invoke "live" remote servers
  */
 public class AbstractBrokerIT {
-	protected static final String uddiURL = "http://localhost:9090";
-	protected static final String wsName = "UpaBroker";
+    protected static final String uddiURL = "http://localhost:9090";
+    protected static final String wsName = "UpaBroker";
 
     // static members
-	protected static BrokerPortType broker;
+    protected static BrokerPortType broker;
 
     // one-time initialization and clean-up
 
     @BeforeClass
     public static void oneTimeSetUp() {
-    	broker = new BrokerClient(uddiURL, wsName);
+        broker = new BrokerClient(uddiURL, wsName);
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
-    	broker = null;
+        broker = null;
     }
 
 

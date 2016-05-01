@@ -1,15 +1,14 @@
 package pt.upa.broker.ws.it;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+import pt.upa.broker.ws.TransportStateView;
+import pt.upa.broker.ws.TransportView;
+import pt.upa.broker.ws.UnknownTransportFault_Exception;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
-import pt.upa.broker.ws.TransportStateView;
-import pt.upa.broker.ws.TransportView;
-import pt.upa.broker.ws.UnknownTransportFault_Exception;
+import static org.junit.Assert.assertEquals;
 
 public class PublicViewTransportIT extends PublicAbstractIT {
 

@@ -11,10 +11,9 @@ import pt.upa.transporter.ws.cli.TransporterClient;
  */
 public class BrokerTransportView extends TransportView {
 
+    private final int maxPrice;
     private UnavailableTransportFault unavailableTransportFault;
     private UnavailableTransportPriceFault unavailableTransportPriceFault;
-
-    private final int maxPrice;
     private int lowestPrice = Integer.MAX_VALUE; // optional, can use JobView's price instead, but this makes it clearer
     private JobView bestJob;
     private TransporterClient client;
@@ -109,8 +108,6 @@ public class BrokerTransportView extends TransportView {
             case COMPLETED:
                 return TransportStateView.COMPLETED;
             default:
-                // this should never happen
-                // TODO: consider returning null/throwing an exception
                 return TransportStateView.BOOKED;
         }
     }

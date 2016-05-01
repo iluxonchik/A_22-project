@@ -1,21 +1,14 @@
 package pt.upa.broker.ws;
 
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.*;
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
-import pt.upa.transporter.ws.BadJobFault_Exception;
-import pt.upa.transporter.ws.JobStateView;
-import pt.upa.transporter.ws.JobView;
-import pt.upa.transporter.ws.cli.TransporterClient;
 
-import javax.xml.registry.JAXRException;
+import java.util.HashMap;
 
-import static org.junit.Assert.*;
-
-import java.util.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by iluxonchik on 15-04-2016.

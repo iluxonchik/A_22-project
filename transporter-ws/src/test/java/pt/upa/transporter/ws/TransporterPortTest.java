@@ -1,9 +1,10 @@
 package pt.upa.transporter.ws;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import static org.junit.Assert.*;
-import mockit.*;
-import pt.upa.shared.Region;
 
 /* Unitary tests */
 
@@ -13,8 +14,8 @@ public class TransporterPortTest extends AbstractTest {
 
     @Before
     public void populate() {
-	    centerSouthPort = new TransporterPort("UpaTransporter1");
-	    centerNorthPort = new TransporterPort("UpaTransporter2");
+        centerSouthPort = new TransporterPort("UpaTransporter1");
+        centerNorthPort = new TransporterPort("UpaTransporter2");
     }
 
     @After
@@ -67,15 +68,16 @@ public class TransporterPortTest extends AbstractTest {
     public void priceFail() throws BadLocationFault_Exception, BadPriceFault_Exception {
         centerNorthPort.requestJob("Aveiro", "Porto", -1);
     }
+
     @Test(expected = BadLocationFault_Exception.class)
     public void unknownLocationFail1() throws BadLocationFault_Exception, BadPriceFault_Exception {
         centerSouthPort.requestJob("Lisboa", "Porto", 100);
-	}
+    }
 
     @Test(expected = BadLocationFault_Exception.class)
     public void unknownLocationFail2() throws BadLocationFault_Exception, BadPriceFault_Exception {
         centerNorthPort.requestJob("Evora", "Viana do Castelo", 26);
-	}
+    }
 
     @Test
     public void decideJobRejectSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception {
@@ -94,9 +96,9 @@ public class TransporterPortTest extends AbstractTest {
     public void timerTestSuccess() throws BadLocationFault_Exception, BadPriceFault_Exception, BadJobFault_Exception, InterruptedException {
         JobView offer = centerSouthPort.requestJob("Evora", "Viseu", 11);
         centerSouthPort.decideJob(offer.getJobIdentifier(), true);
-        Thread.sleep(1000*5*3); // TODO: use a better solution that waiting 15 seconds
+        Thread.sleep(1000 * 5 * 3); // TODO: use a better solution that waiting 15 seconds
         offer = centerSouthPort.jobStatus(offer.getJobIdentifier());
-        assertEquals("Timer did not make the required transitions",JobStateView.COMPLETED, offer.getJobState());
+        assertEquals("Timer did not make the required transitions", JobStateView.COMPLETED, offer.getJobState());
     }
 
 }

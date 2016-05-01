@@ -1,28 +1,15 @@
 package pt.upa.broker.ws.cli;
 
-import pt.upa.broker.ws.BrokerPortType;
-import pt.upa.broker.ws.InvalidPriceFault_Exception;
-import pt.upa.broker.ws.TransportView;
-import pt.upa.broker.ws.UnavailableTransportFault_Exception;
-import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
-import pt.upa.broker.ws.UnknownLocationFault_Exception;
-import pt.upa.broker.ws.UnknownTransportFault_Exception;
-import pt.upa.transporter.ws.TransporterPortType;
-import pt.upa.transporter.ws.TransporterService;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerClientException;
-import pt.upa.broker.ws.BrokerPortType;
-import pt.upa.broker.ws.BrokerService;
+import pt.upa.broker.ws.*;
 
-import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
-
-import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-
-import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
-
 import java.util.List;
 import java.util.Map;
+
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
 
 public class BrokerClient implements BrokerPortType {
@@ -34,7 +21,7 @@ public class BrokerClient implements BrokerPortType {
     private BrokerPortType port;
     private BindingProvider bindingProvider;
     private Map<String, Object> requestContext;
-    
+
     /**
      * Instantiate a BrokerClient from UDDI url and wsName.
      *
@@ -47,10 +34,8 @@ public class BrokerClient implements BrokerPortType {
         this.wsName = wsName;
         try {
             //TODO: replace commented out print messages with log messages
-            //System.out.printf("Contacting UDDI at %s%n", uddiURL);
             uddiNaming = new UDDINaming(uddiURL);
 
-            //System.out.printf("Searching for '%s'%n", name);
             endpointAddress = uddiNaming.lookup(wsName);
 
             if (endpointAddress == null) {
@@ -62,15 +47,6 @@ public class BrokerClient implements BrokerPortType {
         } catch (JAXRException e) {
             throw new BrokerClientException("UDDI error: " + e.getMessage(), e);
         }
-    }
-    
-    private void createStub() {
-        service = new BrokerService();
-        port = service.getBrokerPort();
-
-        bindingProvider = (BindingProvider) port;
-        requestContext = bindingProvider.getRequestContext();
-        requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
     }
 
     /**
@@ -87,32 +63,41 @@ public class BrokerClient implements BrokerPortType {
         createStub();
     }
 
-	@Override
-	public String ping(String name) {
+    private void createStub() {
+        service = new BrokerService();
+        port = service.getBrokerPort();
+
+        bindingProvider = (BindingProvider) port;
+        requestContext = bindingProvider.getRequestContext();
+        requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
+    }
+
+    @Override
+    public String ping(String name) {
         return port.ping(name);
-	}
+    }
 
-	@Override
-	public String requestTransport(String origin, String destination, int price)
-			throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
-			UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
-		return port.requestTransport(origin, destination, price);
-	}
+    @Override
+    public String requestTransport(String origin, String destination, int price)
+            throws InvalidPriceFault_Exception, UnavailableTransportFault_Exception,
+            UnavailableTransportPriceFault_Exception, UnknownLocationFault_Exception {
+        return port.requestTransport(origin, destination, price);
+    }
 
-	@Override
-	public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
-		return port.viewTransport(id);
-	}
+    @Override
+    public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
+        return port.viewTransport(id);
+    }
 
-	@Override
-	public List<TransportView> listTransports() {
-		return port.listTransports();
-	}
+    @Override
+    public List<TransportView> listTransports() {
+        return port.listTransports();
+    }
 
-	@Override
-	public void clearTransports() {
-		port.clearTransports();
-	}
+    @Override
+    public void clearTransports() {
+        port.clearTransports();
+    }
 
     public UDDINaming getUddiNaming() {
         return uddiNaming;

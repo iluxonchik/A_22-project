@@ -34,6 +34,18 @@ public class TransporterJob extends JobView {
     }
 
     /**
+     * Generates a random job id.
+     *
+     * @return the generated job id
+     */
+    public static String getRandJobId() {
+        // For now, simply returns a String representation of a long. Any code generating random job Ids should
+        // use this method, since if we change the way random Ids are created later on, the change propagates over
+        // the whole codebase.
+        return String.valueOf(rand.nextLong());
+    }
+
+    /**
      * Advances to the next JobState, assumes that noting goes wrong and that the job will be accepted.
      * To reject a job, call {@link #rejectJob()}
      *
@@ -45,7 +57,7 @@ public class TransporterJob extends JobView {
             case PROPOSED:
                 setJobState(JobStateView.ACCEPTED);
                 break;
-                case ACCEPTED:
+            case ACCEPTED:
                 setJobState(JobStateView.HEADING);
                 break;
             case HEADING:
@@ -70,26 +82,15 @@ public class TransporterJob extends JobView {
     /**
      * Rejects a job. If the method is called when the job is at any other state, but
      * {@link pt.upa.transporter.ws.JobStateView#PROPOSED}, the method will throw an exception.
+     *
      * @throws InvalidJobStateTransitionException
      */
     public void rejectJob() throws InvalidJobStateTransitionException {
         if (getJobState() == JobStateView.PROPOSED) {
             setJobState(JobStateView.REJECTED);
         } else {
-            // TODO:[priority_low] map JobStateView integer should to a String representation
             throw new InvalidJobStateTransitionException("Cannot reject a job when it's state is "
                     + JobStateView.ACCEPTED);
         }
-    }
-
-    /**
-     * Generates a random job id.
-     * @return the generated job id
-     */
-    public static String getRandJobId() {
-        // For now, simply returns a String representation of a long. Any code generating random job Ids should
-        // use this method, since if we change the way random Ids are created later on, the change propagates over
-        // the whole codebase.
-        return String.valueOf(rand.nextLong());
     }
 }

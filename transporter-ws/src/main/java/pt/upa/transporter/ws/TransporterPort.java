@@ -9,42 +9,24 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @WebService(
-        endpointInterface="pt.upa.transporter.ws.TransporterPortType",
+        endpointInterface = "pt.upa.transporter.ws.TransporterPortType",
         wsdlLocation = "transporter.1_0.wsdl",
         name = "Transporter",
         portName = "TransporterPort",
-        targetNamespace="http://ws.transporter.upa.pt/",
+        targetNamespace = "http://ws.transporter.upa.pt/",
         serviceName = "TransporterService"
 )
 public class TransporterPort implements TransporterPortType {
-    private class JobTimer extends TimerTask {
-        public static final int MAX_TIMER_VAL = 5;
-        private final TransporterJob job;
-
-        public JobTimer(TransporterJob job) {
-            this.job = job;
-        }
-
-        @Override
-        public void run() {
-            job.nextJobState();
-            if (!job.isCompleted()) {
-                timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
-            }
-        }
-    }
-	private final String name;
-        private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
-    private static BadPriceFault badPriceFault; // to avoid creating multiple instances; lazy instantiation
-    private static BadJobFault badJobFault; // to avoid creating multiple instances; lazy instantiation
     private static final Random rand = new Random();
     private static final Timer timer = new Timer();
-
     private static final int PRICE_UPPER_LIM = 100;
     private static final int PRICE_LOWER_LIM = 10;
     private static final int MINIMUM_PRICE = 1;
     private static final String DEFAULT_NAME = "UpaTransporter1";
-
+    private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
+    private static BadPriceFault badPriceFault; // to avoid creating multiple instances; lazy instantiation
+    private static BadJobFault badJobFault; // to avoid creating multiple instances; lazy instantiation
+    private final String name;
     private HashMap<String, TransporterJob> jobs = new HashMap<>();
 
     public TransporterPort() {
@@ -52,18 +34,18 @@ public class TransporterPort implements TransporterPortType {
         name = DEFAULT_NAME;
     }
 
-	public TransporterPort(String name) {
+    public TransporterPort(String name) {
         this.name = name;
-	}
+    }
 
-	@Override
-	public String ping(String name) {
-		return "Hello " + name + "!";
-	}
+    @Override
+    public String ping(String name) {
+        return "Hello " + name + "!";
+    }
 
-	@Override
-	public JobView requestJob(String origin, String destination, int price)
-			throws BadLocationFault_Exception, BadPriceFault_Exception {
+    @Override
+    public JobView requestJob(String origin, String destination, int price)
+            throws BadLocationFault_Exception, BadPriceFault_Exception {
 
         checkRequestJobParams(origin, destination, price);
         int offerPrice;
@@ -80,8 +62,8 @@ public class TransporterPort implements TransporterPortType {
 
         TransporterJob job = new TransporterJob(name, origin, destination, offerPrice);
         addJob(job);
-		return job;
-	}
+        return job;
+    }
 
     private int computePrice(int price) {
         if ((Region.isEvenTransporter(name) && price % 2 == 0) || (!Region.isEvenTransporter(name) && price % 2 != 0)) {
@@ -94,7 +76,6 @@ public class TransporterPort implements TransporterPortType {
         }
         return (price < MINIMUM_PRICE) ? MINIMUM_PRICE : price;
     }
-
 
     /**
      * Checks the parameters of {@link TransporterPort#requestJob(String, String, int)}. Throws all the necessary
@@ -142,7 +123,7 @@ public class TransporterPort implements TransporterPortType {
     }
 
     @Override
-	public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
+    public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
         checkJob(id);
         TransporterJob job = jobs.get(id); // null check done in method above
         if (accept) {
@@ -168,8 +149,8 @@ public class TransporterPort implements TransporterPortType {
                 throw new BadJobFault_Exception(e.getMessage(), badJobFault);
             }
         }
-		return job;
-	}
+        return job;
+    }
 
     private void startTimer(TransporterJob job) {
         timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(JobTimer.MAX_TIMER_VAL)) * 1000);
@@ -177,6 +158,7 @@ public class TransporterPort implements TransporterPortType {
 
     /**
      * Checks if a job id maps to a valid job.
+     *
      * @param id job id
      * @throws BadJobFault_Exception
      */
@@ -195,25 +177,25 @@ public class TransporterPort implements TransporterPortType {
     }
 
     @Override
-	public JobView jobStatus(String id) {
-		// TODO: not the best programming practice... Refractor if there is time
+    public JobView jobStatus(String id) {
+        // TODO: not the best programming practice... Refractor if there is time
         try {
             checkJob(id);
         } catch (BadJobFault_Exception e) {
             return null;
         }
-		return jobs.get(id);
-	}
+        return jobs.get(id);
+    }
 
-	@Override
-	public List<JobView> listJobs() {
-		return new ArrayList<>(jobs.values());
-	}
+    @Override
+    public List<JobView> listJobs() {
+        return new ArrayList<>(jobs.values());
+    }
 
-	@Override
-	public void clearJobs() {
+    @Override
+    public void clearJobs() {
         jobs.clear();
-	}
+    }
 
     private void addJob(TransporterJob job) {
         jobs.put(job.getJobIdentifier(), job);
@@ -222,6 +204,23 @@ public class TransporterPort implements TransporterPortType {
     private void initBadJobFault() {
         if (this.badJobFault == null) {
             this.badJobFault = new BadJobFault();
+        }
+    }
+
+    private class JobTimer extends TimerTask {
+        public static final int MAX_TIMER_VAL = 5;
+        private final TransporterJob job;
+
+        public JobTimer(TransporterJob job) {
+            this.job = job;
+        }
+
+        @Override
+        public void run() {
+            job.nextJobState();
+            if (!job.isCompleted()) {
+                timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
+            }
         }
     }
 
