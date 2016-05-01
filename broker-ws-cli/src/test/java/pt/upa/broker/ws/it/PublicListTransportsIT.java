@@ -30,13 +30,13 @@ public class PublicListTransportsIT extends PublicAbstractIT {
 		assertEquals(3, tList.size());
 
 		TransportView tv1 = tList.get(0);
-		assertTrue(new Boolean((jtv1.getId().equals(tv1.getId())) && jtv1.getOrigin().equals(tv1.getOrigin())
+		assertTrue("Expected origin = " + jtv1.getOrigin() + " Obtained origin: " + tv1.getOrigin(), (jtv1.getId().equals(tv1.getId())) && jtv1.getOrigin().equals(tv1.getOrigin())
 				&& jtv1.getDestination().equals(tv1.getDestination()) && jtv1.getPrice().equals(tv1.getPrice())
-				&& jtv1.getState().toString().equals(tv1.getState().toString())));
+				&& jtv1.getState().toString().equals(tv1.getState().toString()));
 		TransportView tv2 = tList.get(1);
-		assertTrue(new Boolean((jtv2.getId().equals(tv2.getId())) && jtv2.getOrigin().equals(tv2.getOrigin())
+		assertTrue((jtv2.getId().equals(tv2.getId())) && jtv2.getOrigin().equals(tv2.getOrigin())
 				&& jtv2.getDestination().equals(tv2.getDestination()) && jtv2.getPrice().equals(tv2.getPrice())
-				&& jtv2.getState().toString().equals(tv2.getState().toString())));
+				&& jtv2.getState().toString().equals(tv2.getState().toString()));
 	}
 
 }

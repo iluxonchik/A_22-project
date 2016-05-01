@@ -23,7 +23,7 @@ public final class Broker {
     private static int counter = 0;
     private final String uddiUrl;
     private TransporterClient client;
-    private HashMap<String, BrokerTransportView> jobs = new HashMap<>();
+    private LinkedHashMap<String, BrokerTransportView> jobs = new LinkedHashMap<>();
 
     public Broker(String uddiUrl) {
         this.uddiUrl = uddiUrl;

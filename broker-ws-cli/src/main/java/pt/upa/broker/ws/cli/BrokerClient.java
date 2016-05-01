@@ -65,11 +65,9 @@ public class BrokerClient implements BrokerPortType {
     }
     
     private void createStub() {
-        //System.out.println("Generating stub...");
         service = new BrokerService();
         port = service.getBrokerPort();
 
-        //System.out.println("Setting endpoint address...");
         bindingProvider = (BindingProvider) port;
         requestContext = bindingProvider.getRequestContext();
         requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);

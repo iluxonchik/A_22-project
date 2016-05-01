@@ -64,7 +64,7 @@ public class TransporterPort implements TransporterPortType {
 	@Override
 	public JobView requestJob(String origin, String destination, int price)
 			throws BadLocationFault_Exception, BadPriceFault_Exception {
-        // System.out.println("Received a request for a new job| " + origin + " " + destination + " " + price);
+
         checkRequestJobParams(origin, destination, price);
         int offerPrice;
         if (price > PRICE_UPPER_LIM) {
@@ -182,7 +182,6 @@ public class TransporterPort implements TransporterPortType {
      */
     private void checkJob(String id) throws BadJobFault_Exception {
         if (!jobs.containsKey(id)) {
-            System.out.println(id + " is an invalid job id");
             initBadJobFault();
             badJobFault.setId(id);
             throw new BadJobFault_Exception("'" + id + "' is an invalid job id", badJobFault);
@@ -217,7 +216,6 @@ public class TransporterPort implements TransporterPortType {
 	}
 
     private void addJob(TransporterJob job) {
-        System.out.println("Adding job " + job.getJobIdentifier());
         jobs.put(job.getJobIdentifier(), job);
     }
 

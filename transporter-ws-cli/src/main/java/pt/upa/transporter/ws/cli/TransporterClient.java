@@ -79,11 +79,9 @@ public final class TransporterClient implements TransporterPortType {
     }
 
     private void createStub() {
-        //System.out.println("Generating stub...");
         service = new TransporterService();
         port = service.getTransporterPort();
 
-        //System.out.println("Setting endpoint address...");
         bindingProvider = (BindingProvider) port;
         requestContext = bindingProvider.getRequestContext();
         requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
