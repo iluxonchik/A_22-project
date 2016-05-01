@@ -35,10 +35,10 @@ public class BrokerTransportView extends TransportView {
             this.state = TransportStateView.BUDGETED; // there is at least one offer, so the state is now BUDGETED
             if (bestJob != null) {
                 client.decideJob(bestJob.getJobIdentifier(), false); // reject best previous job
-                this.lowestPrice = jw.getJobPrice();
-                this.client = client; // update client
-                bestJob = jw;
             }
+            this.lowestPrice = jw.getJobPrice();
+            this.client = client; // update client
+            bestJob = jw; // TODO: was inside if before
         } else {
             client.decideJob(jw.getJobIdentifier(), false);
         }
@@ -80,7 +80,9 @@ public class BrokerTransportView extends TransportView {
             case FAILED:
                 return TransportStateView.FAILED;
             default:
+                System.out.print("Contacting transporter for job state...");
                 this.state = getJobStateFromTransporter();
+                break;
         }
         return this.state;
     }
@@ -97,7 +99,7 @@ public class BrokerTransportView extends TransportView {
             default:
                 // this should never happen
                 // TODO: consider returning null/throwing an exception
-                return TransportStateView.HEADING;
+                return TransportStateView.BOOKED;
         }
     }
 

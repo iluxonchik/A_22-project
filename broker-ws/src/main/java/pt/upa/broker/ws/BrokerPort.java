@@ -27,9 +27,9 @@ public class BrokerPort implements BrokerPortType {
 
     private final String uddiUrl, wsName, wsUrl;
 
-    public BrokerPort() { 
+    public BrokerPort() {
     	/* Required default constructor */
-    	this(null, null, null); 
+    	this(null, null, null);
     }
     
     public BrokerPort(String uddiUrl, String wsName, String wsUrl) {

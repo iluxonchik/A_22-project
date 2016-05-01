@@ -49,7 +49,6 @@ public final class Broker {
                     throw new BrokerException("Price error: " + e.getMessage());
                 }
             }
-
             chosenJob = tw.scheduleJob();
             return chosenJob;
         } catch (JAXRException e) {
@@ -72,7 +71,10 @@ public final class Broker {
     }
 
     public TransportView getJobById(String id) {
-        return jobs.get(id);
+        BrokerTransportView btw = jobs.get(id);
+        if (btw != null)
+            btw.setState(btw.getState());
+        return btw;
     }
 
     public List<TransportView> getJobList() {

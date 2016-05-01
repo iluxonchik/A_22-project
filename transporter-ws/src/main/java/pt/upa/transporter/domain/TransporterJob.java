@@ -45,7 +45,7 @@ public class TransporterJob extends JobView {
             case PROPOSED:
                 setJobState(JobStateView.ACCEPTED);
                 break;
-            case ACCEPTED:
+                case ACCEPTED:
                 setJobState(JobStateView.HEADING);
                 break;
             case HEADING:
