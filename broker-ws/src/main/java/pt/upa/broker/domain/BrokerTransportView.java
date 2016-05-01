@@ -27,6 +27,7 @@ public class BrokerTransportView extends TransportView {
         this.destination = destination;
         this.maxPrice = maxPrice;
         this.id = UID;
+        this.state = TransportStateView.REQUESTED;
     }
 
     public void processJobOffer(JobView jw, TransporterClient client) throws BadJobFault_Exception {
@@ -57,13 +58,17 @@ public class BrokerTransportView extends TransportView {
         if (this.state == TransportStateView.REQUESTED) {
             // no offers from transporters
             failJob();
+            initUnavailableTransportFault();
+            this.unavailableTransportFault.setOrigin(this.origin);
+            this.unavailableTransportFault.setDestination(this.destination);
+            throw new UnavailableTransportFault_Exception("No available transports found", unavailableTransportFault);
         } else if (!(lowestPrice < maxPrice)) {
             // at least one offer from the transporters, but none of them meet the price requirements
             failJob();
             client.decideJob(bestJob.getJobIdentifier(), false);
             initUnavailableTransportPriceFault();
             this.unavailableTransportPriceFault.setBestPriceFound(lowestPrice);
-            throw new UnavailableTransportPriceFault_Exception("No avaialable transports for the specified price",
+            throw new UnavailableTransportPriceFault_Exception("No available transports for the specified price",
                     unavailableTransportPriceFault);
         } else {
             // there is an offer lower than the maxPrice, so let's accept it
