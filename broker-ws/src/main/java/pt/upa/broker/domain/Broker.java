@@ -3,6 +3,7 @@ package pt.upa.broker.domain;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerException;
 import pt.upa.broker.ws.TransportView;
+import pt.upa.broker.ws.UnavailableTransportFault_Exception;
 import pt.upa.transporter.ws.BadJobFault_Exception;
 import pt.upa.transporter.ws.BadLocationFault_Exception;
 import pt.upa.transporter.ws.BadPriceFault_Exception;
@@ -27,7 +28,8 @@ public final class Broker {
         this.uddiUrl = uddiUrl;
     }
 
-    public BrokerTransportView getCheapestTransporter(String origin, String destination, int maxPrice) {
+    public BrokerTransportView getCheapestTransporter(String origin, String destination, int maxPrice)
+            throws UnavailableTransportFault_Exception {
         JobView jw;
         BrokerTransportView chosenJob;
         BrokerTransportView tw = new BrokerTransportView(origin, destination, maxPrice, getUID());
@@ -49,12 +51,19 @@ public final class Broker {
                     throw new BrokerException("Price error: " + e.getMessage());
                 }
             }
-            chosenJob = tw.scheduleJob();
+
+            try {
+                chosenJob = tw.scheduleJob();
+            } catch (UnavailableTransportFault_Exception e) {
+                throw e;
+            }
+
             return chosenJob;
         } catch (JAXRException e) {
             throw new BrokerException("Could not get endpoint list: " + e.getMessage());
         } catch (BadJobFault_Exception e) {
             // something went wrong during the rejection/acceptance of the offer
+            e.printStackTrace();
             throw new BrokerException("Error: " + e.getMessage());
         }
     }

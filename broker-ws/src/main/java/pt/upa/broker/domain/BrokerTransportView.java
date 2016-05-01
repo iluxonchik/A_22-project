@@ -2,6 +2,8 @@ package pt.upa.broker.domain;
 
 import pt.upa.broker.ws.TransportStateView;
 import pt.upa.broker.ws.TransportView;
+import pt.upa.broker.ws.UnavailableTransportFault;
+import pt.upa.broker.ws.UnavailableTransportFault_Exception;
 import pt.upa.transporter.ws.BadJobFault_Exception;
 import pt.upa.transporter.ws.JobStateView;
 import pt.upa.transporter.ws.JobView;
@@ -11,6 +13,8 @@ import pt.upa.transporter.ws.cli.TransporterClient;
  * Extends {@link TransportView} with a nicer interface.
  */
 public class BrokerTransportView extends TransportView {
+
+    private UnavailableTransportFault unavailableTransportFault;
 
     private final int maxPrice;
     private int lowestPrice = Integer.MAX_VALUE; // optional, can use JobView's price instead, but this makes it clearer
@@ -34,7 +38,7 @@ public class BrokerTransportView extends TransportView {
         if (jw.getJobPrice() < lowestPrice) {
             this.state = TransportStateView.BUDGETED; // there is at least one offer, so the state is now BUDGETED
             if (bestJob != null) {
-                client.decideJob(bestJob.getJobIdentifier(), false); // reject best previous job
+                this.client.decideJob(bestJob.getJobIdentifier(), false); // reject best previous job
             }
             this.lowestPrice = jw.getJobPrice();
             this.client = client; // update client
@@ -50,7 +54,7 @@ public class BrokerTransportView extends TransportView {
      *
      * @return the scheduled {@link JobView} or null if none of the offers met the criteria
      */
-    public BrokerTransportView scheduleJob() throws BadJobFault_Exception {
+    public BrokerTransportView scheduleJob() throws BadJobFault_Exception, UnavailableTransportFault_Exception {
         if (this.state == TransportStateView.REQUESTED) {
             // no offers from transporters
             failJob();
@@ -58,10 +62,15 @@ public class BrokerTransportView extends TransportView {
             // at least one offer from the transporters, but none of them meet the price requirements
             failJob();
             client.decideJob(bestJob.getJobIdentifier(), false);
+            initUnavailableTransportFault();
+            this.unavailableTransportFault.setOrigin(this.origin);
+            this.unavailableTransportFault.setDestination(this.destination);
+            throw new UnavailableTransportFault_Exception("No avaialable transports for the specified price",
+                    unavailableTransportFault);
         } else {
             // there is an offer lower than the maxPrice, so let's accept it
             this.transporterJobId = bestJob.getJobIdentifier();
-            client.decideJob(this.transporterJobId, true);
+            client.decideJob(bestJob.getJobIdentifier(), true);
 
             this.price = bestJob.getJobPrice();
             this.transporterCompany = bestJob.getCompanyName();
@@ -125,6 +134,12 @@ public class BrokerTransportView extends TransportView {
 
     public int getMaxPrice() {
         return maxPrice;
+    }
+
+    private void initUnavailableTransportFault() {
+        if (this.unavailableTransportFault == null) {
+            unavailableTransportFault = new UnavailableTransportFault();
+        }
     }
 
 }
