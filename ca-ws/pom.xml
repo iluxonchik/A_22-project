@@ -31,7 +31,7 @@
 
         <uddi.url>http://localhost:9090</uddi.url>
         <ws.name>CA</ws.name>
-        <ws.url>http://localhost:8081/ca-ws/endpoint</ws.url>
+        <ws.url>http://localhost:8080/ca-ws/endpoint</ws.url>
     </properties>
 
     <build>

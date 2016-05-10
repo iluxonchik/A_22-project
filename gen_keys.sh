@@ -20,7 +20,7 @@ CA_CSR_FILE="ca.csr"
 D_NAME="CN=DistributedSystems,OU=DEI,O=IST,L=Lisbon,S=Lisbon,C=PT"
 SUBJ="/CN=DistributedSystems/OU=DEI/O=IST/L=Lisbon/C=PT"
 KEYS_VALIDITY=90
-OUTPUT_FOLDER="keys_$NOW"
+OUTPUT_FOLDER="keys_$NOW" # TODO: remove timestamp in final version
 CA_FOLDER="$OUTPUT_FOLDER/ca"
 STORE_FILE="$CA_FOLDER/ca-keystore.jks"
 CA_PEM_FILE="$CA_FOLDER/ca-certificate.pem.txt"

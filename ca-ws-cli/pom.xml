@@ -28,7 +28,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
 
         <!-- WSDL is required for client code generation -->
-        <ws.url>http://localhost:8081/ca-ws/endpoint</ws.url>
+        <ws.url>http://localhost:8080/ca-ws/endpoint</ws.url>
         <wsdl.url>${ws.url}?WSDL</wsdl.url>
 
         <mainclass>pt.upa.ca.CAClientApplication</mainclass>
