@@ -1,4 +1,4 @@
-package example.ws.handler;
+package pt.upa.handler;
 
 import java.io.ByteArrayInputStream;
 
