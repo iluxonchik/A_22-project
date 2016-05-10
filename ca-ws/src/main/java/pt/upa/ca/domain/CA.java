@@ -1,6 +1,6 @@
 package pt.upa.ca.domain;
 
-import pt.upa.ca.exception.CertificateNotFound_Exception;
+import pt.upa.ca.exception.CertificateNotFoundException;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -25,17 +25,17 @@ public final class CA {
 
     public CA() { this (DEFAULT_BASE_KEY_DIR); }
 
-    public UpaCertificate getCertificateByName(String name) throws CertificateNotFound_Exception, CertificateException, IOException {
+    public UpaCertificate getCertificateByName(String name) throws CertificateNotFoundException, CertificateException, IOException {
         final String certPath = BASE_KEY_DIR + name + DIR_SEPARATOR + name + CERT_EXT;
         return getCertificateByPath(certPath);
 
     }
 
-    public UpaCertificate getCertificateByPath(String path) throws CertificateNotFound_Exception, CertificateException, IOException {
+    public UpaCertificate getCertificateByPath(String path) throws CertificateNotFoundException, CertificateException, IOException {
         Certificate cert = readCertificateFile(path);
         return new UpaCertificate(cert);
     }
-    private Certificate readCertificateFile(String certificatePath) throws CertificateNotFound_Exception, CertificateException, IOException {
+    private Certificate readCertificateFile(String certificatePath) throws CertificateNotFoundException, CertificateException, IOException {
         FileInputStream fis;
         try {
             fis = new FileInputStream(certificatePath);
@@ -50,7 +50,7 @@ public final class CA {
                 return cert;
             }
         } catch (FileNotFoundException e) {
-            throw new CertificateNotFound_Exception("Certificate with path " + certificatePath + " was not found");
+            throw new CertificateNotFoundException("Certificate with path " + certificatePath + " was not found");
         } catch (CertificateException e) {
             throw e;
         } catch (IOException e) {

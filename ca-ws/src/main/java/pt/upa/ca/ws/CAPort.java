@@ -2,7 +2,7 @@ package pt.upa.ca.ws;
 
 import pt.upa.ca.domain.CA;
 import pt.upa.ca.domain.UpaCertificate;
-import pt.upa.ca.exception.CertificateNotFound_Exception;
+import pt.upa.ca.exception.CertificateNotFoundException;
 
 import javax.jws.WebService;
 import java.io.IOException;
@@ -17,7 +17,7 @@ public class CAPort implements CAPortType {
 	public CAPort(String baseDir) { ca = new CA(baseDir); }
 
 	@Override
-	public UpaCertificate getCertificate(String name) throws CertificateNotFound_Exception, IOException,
+	public UpaCertificate getCertificate(String name) throws CertificateNotFoundException, IOException,
             CertificateException {
         return ca.getCertificateByName(name);
 	}

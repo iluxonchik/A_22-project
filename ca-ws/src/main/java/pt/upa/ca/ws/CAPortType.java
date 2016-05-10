@@ -1,7 +1,7 @@
 package pt.upa.ca.ws;
 
 import pt.upa.ca.domain.UpaCertificate;
-import pt.upa.ca.exception.CertificateNotFound_Exception;
+import pt.upa.ca.exception.CertificateNotFoundException;
 
 import javax.jws.WebService;
 import java.security.cert.Certificate;
@@ -20,5 +20,5 @@ public interface CAPortType {
      * @param name the name of the certificate
      * @return {@link Certificate} with the specified name
      */
-	UpaCertificate getCertificate(String name) throws CertificateNotFound_Exception, IOException, CertificateException;
+	UpaCertificate getCertificate(String name) throws CertificateNotFoundException, IOException, CertificateException;
 }
