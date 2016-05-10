@@ -3,52 +3,62 @@ package pt.upa.ca.ws.cli;
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
 import java.util.Map;
+import java.util.concurrent.BrokenBarrierException;
 
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 
 // classes generated from WSDL
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
-import pt.upa.ca.ws.CAPortService;
-import pt.upa.ca.ws.CAPortType;
+import pt.upa.ca.exception.CAClientException;
+import pt.upa.ca.ws.*;
 
-public class CAClient {
+public class CAClient implements CAPortType {
+    private final UDDINaming uddiNaming;
+    private final String endpointAddr;
+    private final String uddiUrl;
+    private final String wsName;
+    private CAPortService service;
+    private CAPortType port;
+    private BindingProvider bindingProvider;
+    private Map<String, Object> requestContext;
 
-	public static void main(String[] args) throws Exception {
-		// Check arguments
-		if (args.length < 2) {
-			System.err.println("Argument(s) missing!");
-			System.err.printf("Usage: java %s uddiURL name%n", CAClient.class.getName());
-			return;
-		}
+    public CAClient(String uddiUrl, String wsName) {
+        this.uddiUrl = uddiUrl;
+        this.wsName = wsName;
 
-		String uddiURL = args[0];
-		String name = args[1];
+        try {
+            uddiNaming = new UDDINaming(uddiUrl);
+            endpointAddr = uddiNaming.lookup(wsName);
 
-		System.out.printf("Contacting UDDI at %s%n", uddiURL);
-		UDDINaming uddiNaming = new UDDINaming(uddiURL);
+            if (endpointAddr == null) {
+                throw new CAClientException("\"" + wsName + "\" not found at " + uddiUrl);
+            } else {
+                System.out.println("Found " + endpointAddr);
+            }
+            createStub();
+        } catch (JAXRException e) {
+            throw new CAClientException("UDDI error: " + e.getMessage());
+        }
+    }
 
-		System.out.printf("Looking for '%s'%n", name);
-		String endpointAddress = uddiNaming.lookup(name);
+    public void createStub() {
+        service = new CAPortService();
+        port = service.getCAPortPort();
 
-		if (endpointAddress == null) {
-			System.out.println("Not found!");
-			return;
-		} else {
-			System.out.printf("Found %s%n", endpointAddress);
-		}
+        bindingProvider = (BindingProvider) port;
+        requestContext = bindingProvider.getRequestContext();
+        requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddr);
+    }
 
-		System.out.println("Creating stub ...");
-		CAPortService service = new CAPortService();
-		CAPortType port = service.getCAPortPort();
+    @Override
+    public UpaCertificate getCertificate(String name) throws CertificateException_Exception,
+            CertificateNotFoundException_Exception, IOException_Exception {
+        return port.getCertificate(name);
+    }
 
-		System.out.println("Setting endpoint address ...");
-		BindingProvider bindingProvider = (BindingProvider) port;
-		Map<String, Object> requestContext = bindingProvider.getRequestContext();
-		requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
-
-		System.out.println("Remote call ...");
-		String result = port.ping("Dr.Dre");
-		System.out.println(result);
-	}
-
+    @Override
+    public String ping(String msg) {
+        return port.ping(msg);
+    }
 }
