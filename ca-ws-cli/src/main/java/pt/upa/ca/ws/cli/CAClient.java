@@ -3,7 +3,6 @@ package pt.upa.ca.ws.cli;
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
 import java.util.Map;
-import java.util.concurrent.BrokenBarrierException;
 
 import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
@@ -51,14 +50,14 @@ public class CAClient implements CAPortType {
         requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddr);
     }
 
+
     @Override
-    public UpaCertificate getCertificate(String name) throws CertificateException_Exception,
-            CertificateNotFoundException_Exception, IOException_Exception {
-        return port.getCertificate(name);
+    public byte[] getCertificate(String msg) throws CertificateReadException_Exception {
+        return port.getCertificate(msg);
     }
 
     @Override
-    public String ping(String msg) {
-        return port.ping(msg);
+    public String ping(String name) {
+        return port.ping(name);
     }
 }
