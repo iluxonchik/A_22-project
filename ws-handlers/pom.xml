@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-    <groupId>example</groupId>
+    <groupId>pt.upa.handler</groupId>
     <artifactId>ws-handlers</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>

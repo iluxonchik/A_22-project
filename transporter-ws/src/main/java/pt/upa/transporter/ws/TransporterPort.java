@@ -4,6 +4,7 @@ import pt.upa.shared.Region;
 import pt.upa.transporter.domain.TransporterJob;
 import pt.upa.transporter.exception.InvalidJobStateTransitionException;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
         targetNamespace = "http://ws.transporter.upa.pt/",
         serviceName = "TransporterService"
 )
+@HandlerChain(file = "/transporter_handler-chain.xml")
 public class TransporterPort implements TransporterPortType {
     private static final Random rand = new Random();
     private static final Timer timer = new Timer();
