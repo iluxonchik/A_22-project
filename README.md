@@ -71,6 +71,12 @@ git clone -b p1 https://github.com/tecnico-distsys/A_22-project.git
   mvn clean install
   cd ..
   ```
+  
+- Gerar os certificados
+
+  ```
+  ./gen_keys.sh UpaBroker UpaTransporter1 UpaTransporter2
+  ```
 
 -------------------------------------------------------------------------------
 
