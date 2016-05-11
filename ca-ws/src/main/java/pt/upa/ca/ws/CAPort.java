@@ -1,12 +1,9 @@
 package pt.upa.ca.ws;
 
 import pt.upa.ca.domain.CA;
-import pt.upa.ca.domain.UpaCertificate;
-import pt.upa.ca.exception.CertificateNotFoundException;
+import pt.upa.ca.exception.CertificateReadException;
 
 import javax.jws.WebService;
-import java.io.IOException;
-import java.security.cert.CertificateException;
 
 @WebService(endpointInterface = "pt.upa.ca.ws.CAPortType")
 public class CAPort implements CAPortType {
@@ -17,8 +14,7 @@ public class CAPort implements CAPortType {
 	public CAPort(String baseDir) { ca = new CA(baseDir); }
 
 	@Override
-	public UpaCertificate getCertificate(String name) throws CertificateNotFoundException, IOException,
-            CertificateException {
+	public byte[] getCertificate(String name) throws CertificateReadException {
         return ca.getCertificateByName(name);
 	}
 
