@@ -3,6 +3,7 @@ package pt.upa.broker.ws.cli;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerClientException;
 import pt.upa.broker.ws.*;
+import pt.upa.handler.RequestIDHandler;
 
 import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
@@ -74,6 +75,9 @@ public class BrokerClient implements BrokerPortType {
 
     @Override
     public String ping(String name) {
+        // TODO: DEMO REMOVE. This is a demo of how requestIDs should be passed, remove the line below
+        ((BindingProvider)port).getRequestContext().put(RequestIDHandler.CONTEXT_REQUEST_ID, "Dr.Dre");
+
         return port.ping(name);
     }
 

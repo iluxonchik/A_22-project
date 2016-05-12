@@ -2,10 +2,14 @@ package pt.upa.broker.ws;
 
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
+import pt.upa.handler.RequestIDHandler;
 import pt.upa.shared.Region;
 
+import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.WebServiceContext;
 import java.util.List;
 
 
@@ -19,6 +23,9 @@ import java.util.List;
 )
 @HandlerChain(file = "/broker_handler-chain.xml")
 public class BrokerPort implements BrokerPortType {
+    @Resource
+    private WebServiceContext webServiceContext;
+
     private static UnknownLocationFault unknownLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static InvalidPriceFault invalidPriceFault; // to avoid creating multiple instances; lazy instantiation
     private static UnknownTransportFault unknownTransportFault; // to avoid creating multiple instances; lazy instantiation
@@ -40,6 +47,10 @@ public class BrokerPort implements BrokerPortType {
 
     @Override
     public String ping(String name) {
+        // TODO: DEMO REMOVE. This is a demo of how requestIDs should be read back from the Handler, remove the two lines below
+        String headerVal = (String)webServiceContext.getMessageContext().get(RequestIDHandler.CONTEXT_REQUEST_ID);
+        System.out.println("---TEST---\nReceived value: " + headerVal + "\n---TEST---");
+
         return "Hello " + name + " !";
     }
 
