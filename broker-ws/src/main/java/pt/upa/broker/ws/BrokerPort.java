@@ -4,6 +4,7 @@ import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
 import pt.upa.shared.Region;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
         targetNamespace = "http://ws.broker.upa.pt/",
         serviceName = "BrokerService"
 )
+@HandlerChain(file = "/broker_handler-chain.xml")
 public class BrokerPort implements BrokerPortType {
     private static UnknownLocationFault unknownLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static InvalidPriceFault invalidPriceFault; // to avoid creating multiple instances; lazy instantiation
