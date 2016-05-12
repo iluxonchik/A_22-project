@@ -72,6 +72,14 @@ git clone -b p1 https://github.com/tecnico-distsys/A_22-project.git
   cd ..
   ```
   
+- Compilar biblioteca dos Handlers:
+
+  ```shell
+  cd ws-handlers
+  mvn clean install
+  cd ..
+  ```
+
 - Gerar os certificados
 
   ```
