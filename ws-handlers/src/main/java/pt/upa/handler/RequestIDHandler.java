@@ -23,8 +23,6 @@ public class RequestIDHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
     public boolean handleMessage(SOAPMessageContext soapMessageContext) {
-        System.out.println("RequestIDHandler: Handling OUTBOUND message");
-
         boolean isOutbound = (Boolean) soapMessageContext.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
         try {
@@ -36,6 +34,7 @@ public class RequestIDHandler implements SOAPHandler<SOAPMessageContext> {
 
             if (isOutbound) {
                 // Outbound message, so get the request ID from SOAPMessageContext and add it to the header
+                log("RequestIDHandler: Handling OUTBOUND message");
 
                 if (!soapMessageContext.containsKey(CONTEXT_REQUEST_ID)) {
                     // if the request ID was not passed, don't send it in the header

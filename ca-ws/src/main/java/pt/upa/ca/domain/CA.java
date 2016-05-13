@@ -1,6 +1,7 @@
 package pt.upa.ca.domain;
 
 import pt.upa.ca.exception.CertificateReadException;
+import pt.upa.shared.domain.CertificateHelper;
 
 import java.io.*;
 
@@ -8,20 +9,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public final class CA {
-    private static final String DEFAULT_BASE_KEY_DIR = "../keys/";
-    private static final String DIR_SEPARATOR = "/";
-    private static final String CERT_EXT = ".cer";
-
     private final String BASE_KEY_DIR;
 
     public CA(String baseDir) {
         BASE_KEY_DIR = baseDir;
     }
 
-    public CA() { this (DEFAULT_BASE_KEY_DIR); }
+    public CA() { this (CertificateHelper.DEFAULT_BASE_KEY_DIR); }
 
     public byte[] getCertificateByName(String name) throws CertificateReadException {
-        final String certPath = BASE_KEY_DIR + name + DIR_SEPARATOR + name + CERT_EXT;
+        final String certPath = BASE_KEY_DIR + name +
+                CertificateHelper.DIR_SEPARATOR + name + CertificateHelper.CERT_EXT;
         return getCertificateByPath(certPath);
 
     }

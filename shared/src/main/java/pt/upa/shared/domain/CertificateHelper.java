@@ -118,6 +118,7 @@ public class CertificateHelper {
             return sig.verify(cipherDigest);
         } catch (SignatureException e) {
             System.err.println("Error verifying signature: " + e.getMessage());
+            return false;
         }
     }
 }

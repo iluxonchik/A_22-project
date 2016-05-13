@@ -1,11 +1,21 @@
 package pt.upa.transporter.ws;
 
+import pt.upa.handler.AuthenticationHandler;
 import pt.upa.shared.Region;
+import pt.upa.shared.domain.CertificateHelper;
 import pt.upa.transporter.domain.TransporterJob;
 import pt.upa.transporter.exception.InvalidJobStateTransitionException;
 
+import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import javax.xml.ws.WebServiceContext;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+import java.security.spec.ECField;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -19,6 +29,9 @@ import java.util.concurrent.ThreadLocalRandom;
 )
 @HandlerChain(file = "/transporter_handler-chain.xml")
 public class TransporterPort implements TransporterPortType {
+    @Resource
+    private WebServiceContext webServiceContext;
+
     private static final Random rand = new Random();
     private static final Timer timer = new Timer();
     private static final int PRICE_UPPER_LIM = 100;
@@ -28,6 +41,11 @@ public class TransporterPort implements TransporterPortType {
     private static BadLocationFault badLocationFault; // to avoid creating multiple instances; lazy instantiation
     private static BadPriceFault badPriceFault; // to avoid creating multiple instances; lazy instantiation
     private static BadJobFault badJobFault; // to avoid creating multiple instances; lazy instantiation
+
+    public String getName() {
+        return name;
+    }
+
     private final String name;
     private HashMap<String, TransporterJob> jobs = new HashMap<>();
 
@@ -42,13 +60,14 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
     public String ping(String name) {
+        setReqContext();
         return "Hello " + name + "!";
     }
 
     @Override
     public JobView requestJob(String origin, String destination, int price)
             throws BadLocationFault_Exception, BadPriceFault_Exception {
-
+        setReqContext();
         checkRequestJobParams(origin, destination, price);
         int offerPrice;
         if (price > PRICE_UPPER_LIM) {
@@ -126,6 +145,7 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
     public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
+        setReqContext();
         checkJob(id);
         TransporterJob job = jobs.get(id); // null check done in method above
         if (accept) {
@@ -180,6 +200,7 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
     public JobView jobStatus(String id) {
+        setReqContext();
         // TODO: not the best programming practice... Refractor if there is time
         try {
             checkJob(id);
@@ -191,11 +212,13 @@ public class TransporterPort implements TransporterPortType {
 
     @Override
     public List<JobView> listJobs() {
+        setReqContext();
         return new ArrayList<>(jobs.values());
     }
 
     @Override
     public void clearJobs() {
+        setReqContext();
         jobs.clear();
     }
 
@@ -223,6 +246,19 @@ public class TransporterPort implements TransporterPortType {
             if (!job.isCompleted()) {
                 timer.schedule(new JobTimer(job), (1 + ThreadLocalRandom.current().nextLong(MAX_TIMER_VAL)) * 1000);
             }
+        }
+    }
+
+
+    private void setReqContext() {
+        try {
+            webServiceContext.getMessageContext().put(AuthenticationHandler.CONTEXT_SENDER_NAME, getName());
+            webServiceContext.getMessageContext().put(AuthenticationHandler.CONTEXT_PRIVATE_KEY,
+                    CertificateHelper.getPrivateKey(getName()));
+        } catch (Exception e) {
+            System.out.println("[FATAL!!!] FAILED to get private key");
+            e.printStackTrace();
+
         }
     }
 

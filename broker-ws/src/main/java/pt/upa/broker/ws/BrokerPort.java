@@ -39,7 +39,7 @@ public class BrokerPort implements BrokerPortType {
     }
 
     public BrokerPort(String uddiUrl, String wsName, String wsUrl) {
-        this.broker = new Broker(uddiUrl);
+        this.broker = new Broker(uddiUrl, wsName);
         this.uddiUrl = uddiUrl;
         this.wsName = wsName;
         this.wsUrl = wsUrl;

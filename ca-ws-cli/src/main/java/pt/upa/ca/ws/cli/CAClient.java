@@ -22,6 +22,11 @@ public class CAClient implements CAPortType {
     private BindingProvider bindingProvider;
     private Map<String, Object> requestContext;
 
+    private static final String DEFAULT_UDDI_URL = "http://localhost:9090";
+    private static final String DEFAULT_WS_NAME = "CA";
+
+
+    public CAClient() { this(DEFAULT_UDDI_URL, DEFAULT_WS_NAME); }
     public CAClient(String uddiUrl, String wsName) {
         this.uddiUrl = uddiUrl;
         this.wsName = wsName;

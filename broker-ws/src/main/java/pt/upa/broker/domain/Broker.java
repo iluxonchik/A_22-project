@@ -5,6 +5,8 @@ import pt.upa.broker.exception.BrokerException;
 import pt.upa.broker.ws.TransportView;
 import pt.upa.broker.ws.UnavailableTransportFault_Exception;
 import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
+import pt.upa.handler.AuthenticationHandler;
+import pt.upa.shared.domain.CertificateHelper;
 import pt.upa.transporter.ws.BadJobFault_Exception;
 import pt.upa.transporter.ws.BadLocationFault_Exception;
 import pt.upa.transporter.ws.BadPriceFault_Exception;
@@ -12,6 +14,12 @@ import pt.upa.transporter.ws.JobView;
 import pt.upa.transporter.ws.cli.TransporterClient;
 
 import javax.xml.registry.JAXRException;
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 /**
@@ -24,9 +32,12 @@ public final class Broker {
     private final String uddiUrl;
     private TransporterClient client;
     private LinkedHashMap<String, BrokerTransportView> jobs = new LinkedHashMap<>();
+    private final String wsName;
 
-    public Broker(String uddiUrl) {
+
+    public Broker(String uddiUrl, String wsName) {
         this.uddiUrl = uddiUrl;
+        this.wsName = wsName;
     }
 
     public BrokerTransportView getCheapestTransporter(String origin, String destination, int maxPrice)
@@ -40,7 +51,7 @@ public final class Broker {
 
             // iterate through the list of endpoints and select the lowest offer below maxPrice (if such exists)
             for (String endpoint : endpoints) {
-                client = new TransporterClient(endpoint);
+                setClient(new TransporterClient(endpoint));
                 try {
                     jw = client.requestJob(origin, destination, maxPrice);
                     tw.processJobOffer(jw, client);
@@ -106,5 +117,26 @@ public final class Broker {
                 .filter(c -> c != null)
                 .forEach(c -> c.clearJobs());
         jobs.clear();
+    }
+
+    private void setClient(TransporterClient client) {
+        this.client = client;
+        // TODO
+        //setClientReqContext(client);
+    }
+
+    private void setClientReqContext(TransporterClient client) {
+        client.getRequestContext().put(AuthenticationHandler.CONTEXT_PRIVATE_KEY, getPrivateKey());
+        client.getRequestContext().put(AuthenticationHandler.CONTEXT_SENDER_NAME, this.wsName);
+    }
+
+    public PrivateKey getPrivateKey() {
+        try {
+            return CertificateHelper.getPrivateKey(this.wsName);
+        } catch (Exception e) {
+            System.out.println("[FATAL!!!] Could not get private key");
+            e.printStackTrace();
+            return null;
+        }
     }
 }
