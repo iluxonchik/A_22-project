@@ -18,11 +18,27 @@ import java.util.*;
  * A Broker tied to a specific URL of UDDI
  */
 public final class Broker {
+	
+	public class BrokerStateUpdate {
+		private BrokerTransportView btw;
+		private int counter;
+		public BrokerStateUpdate( BrokerTransportView btw, int counter) {
+			this.btw = btw;
+			this.counter = counter;
+		}
+		
+		public BrokerTransportView getBTW() {
+			return btw;
+		}
+		public int getCounter() {
+			return counter;
+		}
+	}
+	
     private static final String TRANSPORTER_WLDCRT = "UpaTransporter%";
 
     private static int counter = 0;
     private final String uddiUrl;
-    private TransporterClient client;
     private LinkedHashMap<String, BrokerTransportView> jobs = new LinkedHashMap<>();
 
     public Broker(String uddiUrl) {
@@ -35,6 +51,7 @@ public final class Broker {
         BrokerTransportView chosenJob;
         BrokerTransportView tw = new BrokerTransportView(origin, destination, maxPrice, getUID());
         jobs.put(tw.getId(), tw);
+        TransporterClient client;
         try {
             Collection<String> endpoints = getTransportersList();
 
@@ -106,5 +123,19 @@ public final class Broker {
                 .filter(c -> c != null)
                 .forEach(c -> c.clearJobs());
         jobs.clear();
+    }
+    
+    /** used by the slave BrokerPort to save the job sent by the master
+     */
+    public void updateState(BrokerStateUpdate bsu) {
+    	BrokerTransportView btw = bsu.getBTW();
+    	jobs.put(btw.getId(), btw); // job is replaced if it already exists
+    	counter = bsu.getCounter();
+    }
+
+    /** used by the master BrokerPort to get the job to be sent to the slave
+     */
+    public BrokerStateUpdate getBTWJob(String id) {
+    	return new BrokerStateUpdate( jobs.get(id), counter);
     }
 }

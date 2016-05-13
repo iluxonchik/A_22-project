@@ -14,13 +14,25 @@ public class BrokerTransportView extends TransportView {
     private final int maxPrice;
     private UnavailableTransportFault unavailableTransportFault;
     private UnavailableTransportPriceFault unavailableTransportPriceFault;
+	/// no need to sync with slave
     private int lowestPrice = Integer.MAX_VALUE; // optional, can use JobView's price instead, but this makes it clearer
+	/// no need to sync with slave
     private JobView bestJob;
+    /// can recreate it from String endpoint
     private TransporterClient client;
     // the corresponding job id on the transporter's side (this.id corresponds to transporters transporterJobId)
     // used internally to communicate with the transporter
     private String transporterJobId;
 
+    public BrokerTransportView(BrokerTVUpdateType btvu) {
+    	maxPrice = btvu.getMaxPrice();
+    	client   = new TransporterClient(btvu.getClientEndpoint());
+    	transporterJobId = btvu.getTransporterJobId();
+    	
+        initUnavailableTransportFault();
+        initUnavailableTransportPriceFault();
+    }
+    
     public BrokerTransportView(String origin, String destination, int maxPrice, String UID) {
         this.origin = origin;
         this.destination = destination;
@@ -116,23 +128,23 @@ public class BrokerTransportView extends TransportView {
         this.state = TransportStateView.FAILED;
     }
 
-    public int getLowestPrice() {
+    protected int getLowestPrice() {
         return lowestPrice;
     }
 
-    public JobView getBestJob() {
+    protected JobView getBestJob() {
         return bestJob;
     }
 
-    public String getTransporterJobId() {
+    protected String getTransporterJobId() {
         return this.transporterJobId;
     }
 
-    public TransporterClient getClient() {
+    protected TransporterClient getClient() {
         return client;
     }
 
-    public int getMaxPrice() {
+    protected int getMaxPrice() {
         return maxPrice;
     }
 

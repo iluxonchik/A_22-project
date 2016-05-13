@@ -4,7 +4,12 @@ package pt.upa.broker.exception;
  * Base exception class for TransporterClient
  */
 public class BrokerException extends RuntimeException {
-    public BrokerException(String msg) {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 201605102233L;
+
+	public BrokerException(String msg) {
         super(msg);
     }
 
