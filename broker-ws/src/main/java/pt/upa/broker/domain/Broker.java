@@ -34,6 +34,7 @@ public final class Broker {
     private final String uddiUrl;
     private LinkedHashMap<String, BrokerTransportView> jobs = new LinkedHashMap<>();
     private final String wsName;
+    TransporterClient client;
 
 
     public Broker(String uddiUrl, String wsName) {
@@ -47,7 +48,6 @@ public final class Broker {
         BrokerTransportView chosenJob;
         BrokerTransportView tw = new BrokerTransportView(origin, destination, maxPrice, getUID());
         jobs.put(tw.getId(), tw);
-        TransporterClient client;
         try {
             Collection<String> endpoints = getTransportersList();
 
