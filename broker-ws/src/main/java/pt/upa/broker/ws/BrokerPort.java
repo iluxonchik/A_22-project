@@ -18,6 +18,8 @@ import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 @WebService(
@@ -30,6 +32,7 @@ import java.util.Map;
 )
 @HandlerChain(file = "/broker_handler-chain.xml")
 public class BrokerPort implements BrokerPortType {
+    protected static final long WATCH_DELAY_MS = 460;
     @Resource
     private WebServiceContext webServiceContext;
 
@@ -38,7 +41,9 @@ public class BrokerPort implements BrokerPortType {
     private static UnknownTransportFault unknownTransportFault; // to avoid creating multiple instances; lazy instantiation
     private final Broker broker;
 
-    private final String uddiUrl, wsName, wsUrl;
+    private final String uddiUrl;
+	protected final String wsName;
+	protected final String wsUrl;
 
     private LinkedHashMap<String, String> requestCache = new LinkedHashMap<String, String>(); 
     
@@ -176,7 +181,7 @@ public class BrokerPort implements BrokerPortType {
 	}
 	
 	protected BrokerPortType getRemoteBroker(String url) throws JAXRException {
-		UDDINaming uddiNaming = new UDDINaming(uddiUrl);
+		UDDINaming uddiNaming = new UDDINaming(getUddiUrl());
 	    String endpointAddress = uddiNaming.lookup(wsName);
 		BrokerService service = new BrokerService();
 		BrokerPortType port = service.getBrokerPort();
@@ -193,4 +198,10 @@ public class BrokerPort implements BrokerPortType {
 	protected String cache(String id, String response) {
 		return requestCache.put(id, response);
 	}
+
+	protected String getUddiUrl() {
+		return uddiUrl;
+	}
+	
+	
 }

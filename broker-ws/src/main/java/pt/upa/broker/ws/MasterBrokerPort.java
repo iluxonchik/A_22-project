@@ -2,10 +2,13 @@ package pt.upa.broker.ws;
 
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
+
 
 
 @WebService(
@@ -20,12 +23,23 @@ import javax.xml.registry.JAXRException;
 public class MasterBrokerPort extends BrokerPort {
 	protected BrokerPortType slave;
 	protected String slaveURL;
+    protected Timer watchdogTimer = new Timer();
     public MasterBrokerPort(String uddiUrl, String wsName, String masterURL, String slaveURL) throws JAXRException {
     	super(uddiUrl, wsName, masterURL);
     	this.slaveURL = slaveURL;
     	slave = getRemoteBroker(slaveURL);
+        watchdogTimer.schedule(new WatchdogTask(), WATCH_DELAY_MS);
     }
 
+
+    private class WatchdogTask extends TimerTask {
+        @Override
+        public void run() {
+            String res = slave.ping("watchdog");
+            watchdogTimer.schedule(new WatchdogTask(), WATCH_DELAY_MS);
+        }
+    }
+    
     @Override
     public String ping(String name) {
     	// Broker state is not changed here
