@@ -24,14 +24,14 @@ import pt.upa.broker.ws.UnknownTransportFault_Exception;
 import pt.upa.handler.RequestIDHandler;
 
 public class FrontEnd implements BrokerPortType {
-    private final UDDINaming uddiNaming;
-    private final String endpointAddress; // A.K.A. wsUrl
-    private final String uddiUrl;
-    private final String wsName;
-    private BrokerService service;
-    private BrokerPortType port;
-    private BindingProvider bindingProvider;
-    private Map<String, Object> requestContext;
+    protected final UDDINaming uddiNaming;
+    protected final String endpointAddress; // A.K.A. wsUrl
+    protected final String uddiUrl;
+    protected final String wsName;
+    protected BrokerService service;
+    protected BrokerPortType port;
+    protected BindingProvider bindingProvider;
+    protected Map<String, Object> requestContext;
 
     /**
      * Instantiate a BrokerClient from UDDI url and wsName.
