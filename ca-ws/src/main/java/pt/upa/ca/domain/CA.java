@@ -18,9 +18,14 @@ public final class CA {
     public CA() { this (CertificateHelper.DEFAULT_BASE_KEY_DIR); }
 
     public byte[] getCertificateByName(String name) throws CertificateReadException {
-        final String certPath = BASE_KEY_DIR + name +
-                CertificateHelper.DIR_SEPARATOR + name + CertificateHelper.CERT_EXT;
-        return getCertificateByPath(certPath);
+        String certPath;
+        if (name == "ca"){
+            certPath = "../keys/ca/ca-certificate.pem.txt";
+        } else {
+            certPath = BASE_KEY_DIR + name +
+                    CertificateHelper.DIR_SEPARATOR + name + CertificateHelper.CERT_EXT;
+        }
+            return getCertificateByPath(certPath);
 
     }
 

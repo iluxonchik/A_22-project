@@ -33,6 +33,7 @@ public class CertificateManager {
     public CertificateManager() { this(10 * 1000); /* 10 seconds*/ }
 
     public Certificate getCertificate(String name, CAClient ca) throws CertificateReadException_Exception, CertificateException {
+        System.out.println("getCert: " + name);
         if (cache.containsKey(name)) {
             if (System.currentTimeMillis() - cache.get(name).time  <= CACHE_TIME) {
                 // cache is valid

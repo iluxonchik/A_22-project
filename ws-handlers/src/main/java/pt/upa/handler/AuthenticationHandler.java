@@ -18,8 +18,9 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.security.PrivateKey;
+import java.security.*;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
@@ -121,6 +122,14 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
                 //Certificate cert  = CertificateHelper
                         //.readCertificateFromByteArray(ca.getCertificate(headerElems.get(SENDER_HEADER_NAME)));
                 Certificate cert = certificateManager.getCertificate(headerElems.get(SENDER_HEADER_NAME), ca);
+                Certificate caCert = CertificateHelper.readCertificateFromByteArray(CertificateHelper.
+                        readCertificateFile("../keys/ca/ca-certificate.pem.txt").getEncoded());
+
+                if (!verifySignedCertificate(cert, caCert.getPublicKey())) {
+                    System.out.println("INVALID CERTIFICATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    return false;
+                }
+
                 log("Got certificate from CA");
                 log("[IMPORTANT] INBOUND Nonce : Encoded " + nonce + " : " + headerElems.get(AUTH_HEADER_NAME));
                 log("[IMPORTANT] INBOUND Nonce : BODY " + nonce + " : " + getSoapBodyXML(msg));
@@ -221,5 +230,16 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
         if (DEBUG) {
             System.out.println("AuthenticationHandler: " + msg);
         }
+    }
+
+    public boolean verifySignedCertificate(Certificate cert, PublicKey pub) {
+        try {
+            cert.verify(pub);
+        } catch (InvalidKeyException | CertificateException | NoSuchAlgorithmException | NoSuchProviderException
+                | SignatureException e) {
+
+            return false;
+        }
+        return true;
     }
 }
