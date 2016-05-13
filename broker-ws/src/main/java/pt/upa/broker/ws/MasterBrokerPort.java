@@ -36,9 +36,14 @@ public class MasterBrokerPort extends BrokerPort {
     public String requestTransport(String origin, String destination, int price) throws InvalidPriceFault_Exception,
             UnavailableTransportFault_Exception, UnavailableTransportPriceFault_Exception,
             UnknownLocationFault_Exception {
-    	String response = super.requestTransport(origin, destination, price);
-    	// TODO: cache response and send it to slave
-    	sendUpdate(slave, false, response); // response is the id of the job
+    	String reqID = getRequestID();
+    	String response = getCachedRequest(reqID);
+    	if(response == null) {
+    		response = super.requestTransport(origin, destination, price);
+    	}
+    	// cache response and send it to slave
+    	cache(reqID, response);
+    	sendUpdate(slave, false, response, reqID); // response is the id of the job
     	return response;
     }
 
@@ -46,8 +51,8 @@ public class MasterBrokerPort extends BrokerPort {
     public TransportView viewTransport(String id) throws UnknownTransportFault_Exception {
         // NOTE: BrokerTransportView overrides getState() and contacts Transporter if it's necessary
         TransportView tw = super.viewTransport(id);
-        // TODO: cache response cache response and send it to slave
-        sendUpdate(slave, false, id); // the TransportView might be modified when getting its state from the Transporter
+        // NOTE: (cache response ?) and send it to slave
+        sendUpdate(slave, false, id, null); // the TransportView might be modified when getting its state from the Transporter
         return tw;
     }
 
@@ -59,7 +64,7 @@ public class MasterBrokerPort extends BrokerPort {
 
     @Override
     public void clearTransports() {
-    	sendUpdate(slave, true, null);
+    	sendUpdate(slave, true, null, null);
         super.clearTransports();
     }
 

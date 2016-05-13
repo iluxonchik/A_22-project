@@ -15,6 +15,7 @@ import javax.xml.ws.WebServiceContext;
 
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +40,8 @@ public class BrokerPort implements BrokerPortType {
 
     private final String uddiUrl, wsName, wsUrl;
 
+    private LinkedHashMap<String, String> requestCache = new LinkedHashMap<String, String>(); 
+    
     public BrokerPort() {
         /* Required default constructor */
         this(null, null, null);
@@ -51,12 +54,18 @@ public class BrokerPort implements BrokerPortType {
         this.wsUrl = wsUrl;
     }
 
+    protected String getRequestID() {
+    	String headerVal = (String)webServiceContext.getMessageContext().get(RequestIDHandler.CONTEXT_REQUEST_ID);
+        return headerVal;
+    }
+    
+    protected void putRequestId(BrokerPortType port, String id) {
+    	((BindingProvider) port).getRequestContext()
+    		.put(RequestIDHandler.CONTEXT_REQUEST_ID, id);
+    }
+    
     @Override
     public String ping(String name) {
-        // TODO: DEMO REMOVE. This is a demo of how requestIDs should be read back from the Handler, remove the two lines below
-        String headerVal = (String)webServiceContext.getMessageContext().get(RequestIDHandler.CONTEXT_REQUEST_ID);
-        System.out.println("---TEST---\nReceived value: " + headerVal + "\n---TEST---");
-
         return "Hello " + name + " !";
     }
 
@@ -143,24 +152,27 @@ public class BrokerPort implements BrokerPortType {
     }
 
 	@Override
-	public String updateState(boolean clearJobs, int counter, BrokerTVUpdateType brokerTVU) {
+	public String updateState(boolean clearJobs, int counter, BrokerTVUpdateType brokerTVU, String reqID, String response) {
 		if(clearJobs) {
 			clearTransports();
 			return "clear";
 		} else {
 			broker.updateState(brokerTVU, counter);
+			if( reqID != null) {
+				cache(reqID, response);
+			}
 			return "update";
 		}
 	}
 
-	protected void sendUpdate(BrokerPortType slave, boolean clearJobs, String id) {
+	protected void sendUpdate(BrokerPortType slave, boolean clearJobs, String jid, String reqID) {
 		int counter = 0;
 		BrokerTVUpdateType brokerTVU = null;
 		if(!clearJobs) {
 			counter = broker.getCounter();
-			brokerTVU = broker.getBTVUpdate(id);
+			brokerTVU = broker.getBTVUpdate(jid);
 		}
-		slave.updateState(clearJobs, counter, brokerTVU);
+		slave.updateState(clearJobs, counter, brokerTVU, reqID, jid);
 	}
 	
 	protected BrokerPortType getRemoteBroker(String url) throws JAXRException {
@@ -174,4 +186,11 @@ public class BrokerPort implements BrokerPortType {
 		return port;
 	}
 	
+	protected String getCachedRequest(String id) {
+		return requestCache.get(id);
+	}
+	
+	protected String cache(String id, String response) {
+		return requestCache.put(id, response);
+	}
 }

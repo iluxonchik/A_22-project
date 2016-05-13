@@ -176,6 +176,11 @@
             			<xs:element name="brokerTV"
             				type="tns:BrokerTVUpdateType">
             			</xs:element>
+            			<xs:element name="reqID" type="xs:string">
+            			</xs:element>
+            			<xs:element name="response"
+            				type="xs:string">
+            			</xs:element>
             		</xs:sequence>
             	</xs:complexType>
             </xs:element>
