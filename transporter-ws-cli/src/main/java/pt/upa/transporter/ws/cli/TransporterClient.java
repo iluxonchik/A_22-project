@@ -1,11 +1,14 @@
 package pt.upa.transporter.ws.cli;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.upa.handler.AuthenticationHandler;
+import pt.upa.shared.domain.CertificateHelper;
 import pt.upa.transporter.exception.TransporterClientException;
 import pt.upa.transporter.ws.*;
 
 import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
+import java.security.PrivateKey;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +29,7 @@ import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
  */
 public final class TransporterClient implements TransporterPortType {
 
+    private static final String DEFAULT_BROKER_NAME = "UpaBroker";
     private final UDDINaming uddiNaming;
     private final String endpointAddress; // A.K.A. wsUrl
     private final String uddiUrl;
@@ -34,17 +38,16 @@ public final class TransporterClient implements TransporterPortType {
     private TransporterPortType port;
     private BindingProvider bindingProvider;
     private Map<String, Object> requestContext;
+    private final String brokerWsName;
+    private final PrivateKey brokerPrivateKey;
 
-    /**
-     * Instantiate from UDDI url and wsName.
-     *
-     * @param uddiURL UDDI server address
-     * @param wsName  name of the transporter to connect to
-     * @throws TransporterClientException
-     */
-    public TransporterClient(String uddiURL, String wsName) throws TransporterClientException {
+
+    public TransporterClient(String uddiURL, String wsName, String brokerWsName, PrivateKey privateKey)
+            throws TransporterClientException {
         this.uddiUrl = uddiURL;
         this.wsName = wsName;
+        this.brokerWsName = brokerWsName;
+        this.brokerPrivateKey = privateKey;
         try {
             //TODO: replace commented out print messages with log messages
             // System.out.printf("Contacting UDDI at %s%n", uddiURL);
@@ -56,12 +59,27 @@ public final class TransporterClient implements TransporterPortType {
             if (endpointAddress == null) {
                 throw new TransporterClientException("'" + wsName + "' Not Found at " + uddiURL);
             } else {
-                System.out.printf("Found %s%n", endpointAddress);
+                //System.out.printf("Found %s%n", endpointAddress);
             }
             createStub();
         } catch (JAXRException e) {
             throw new TransporterClientException("UDDI error: " + e.getMessage(), e);
         }
+        setReqContext();
+    }
+
+
+    public TransporterClient(String endpointAddress, String brokerWsName, PrivateKey privateKey) {
+        uddiNaming = null;
+        uddiUrl = null;
+        wsName = null;
+
+        this.brokerWsName = brokerWsName;
+        this.brokerPrivateKey = privateKey;
+
+        this.endpointAddress = endpointAddress;
+        createStub();
+        setReqContext();
     }
 
     /**
@@ -74,8 +92,58 @@ public final class TransporterClient implements TransporterPortType {
         uddiUrl = null;
         wsName = null;
 
+        this.brokerWsName = DEFAULT_BROKER_NAME;
+
+        try {
+            this.brokerPrivateKey = CertificateHelper.getPrivateKey(DEFAULT_BROKER_NAME);
+        } catch (Exception e) {
+            throw new TransporterClientException("UpaBroker PrivateKey not found, make sure the keys have been generated. " +
+                    "Please, follow the instructions in README.md");
+        }
+
         this.endpointAddress = endpointAddress;
         createStub();
+        setReqContext();
+    }
+
+    /**
+     * Instantiate from UDDI url and wsName.
+     *
+     * @param uddiURL UDDI server address
+     * @param wsName  name of the transporter to connect to
+     * @throws TransporterClientException
+     */
+    public TransporterClient(String uddiURL, String wsName) throws TransporterClientException {
+        this.uddiUrl = uddiURL;
+        this.wsName = wsName;
+
+        this.brokerWsName = DEFAULT_BROKER_NAME;
+
+        try {
+            this.brokerPrivateKey = CertificateHelper.getPrivateKey(DEFAULT_BROKER_NAME);
+        } catch (Exception e) {
+            throw new TransporterClientException("UpaBroker PrivateKey not found, make sure the keys have been generated. " +
+                    "Please, follow the instructions in README.md");
+        }
+
+        try {
+            //TODO: replace commented out print messages with log messages
+            // System.out.printf("Contacting UDDI at %s%n", uddiURL);
+            uddiNaming = new UDDINaming(uddiURL);
+
+            //System.out.printf("Searching for '%s'%n", name);
+            endpointAddress = uddiNaming.lookup(wsName);
+
+            if (endpointAddress == null) {
+                throw new TransporterClientException("'" + wsName + "' Not Found at " + uddiURL);
+            } else {
+                //System.out.printf("Found %s%n", endpointAddress);
+            }
+            createStub();
+        } catch (JAXRException e) {
+            throw new TransporterClientException("UDDI error: " + e.getMessage(), e);
+        }
+        setReqContext();
     }
 
     private void createStub() {
@@ -87,33 +155,40 @@ public final class TransporterClient implements TransporterPortType {
         requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
     }
 
+
     @Override
     public String ping(String name) {
+        setReqContext();
         return port.ping(name);
     }
 
     @Override
     public JobView requestJob(String origin, String destination, int price) throws BadLocationFault_Exception, BadPriceFault_Exception {
+        setReqContext();
         return port.requestJob(origin, destination, price);
     }
 
     @Override
     public JobView decideJob(String id, boolean accept) throws BadJobFault_Exception {
+        setReqContext();
         return port.decideJob(id, accept);
     }
 
     @Override
     public JobView jobStatus(String id) {
+        setReqContext();
         return port.jobStatus(id);
     }
 
     @Override
     public List<JobView> listJobs() {
+        setReqContext();
         return port.listJobs();
     }
 
     @Override
     public void clearJobs() {
+        setReqContext();
         port.clearJobs();
     }
 
@@ -148,5 +223,10 @@ public final class TransporterClient implements TransporterPortType {
 
     public String getWsName() {
         return wsName;
+    }
+
+    private void setReqContext() {
+        bindingProvider.getRequestContext().put(AuthenticationHandler.CONTEXT_PRIVATE_KEY, this.brokerPrivateKey);
+        bindingProvider.getRequestContext().put(AuthenticationHandler.CONTEXT_SENDER_NAME, this.brokerWsName);
     }
 }
