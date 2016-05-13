@@ -6,14 +6,38 @@ import pt.upa.broker.ws.BrokerPort;
 import javax.xml.ws.Endpoint;
 
 public class BrokerApplication {
+	public static final String REPLICATION_NONE = "none";
+	public static final String REPLICATION_MASTER = "master";
+	public static final String REPLICATION_SLAVE = "slave";
 
+	
+	private static void printUsage() {
+        System.err.printf("Usage: java %s uddiURL wsName wsURL [none|slave|(master slave_wsURL)]%n", BrokerApplication.class.getName());
+	}
+	
     public static void main(String[] args) throws Exception {
         System.out.println(BrokerApplication.class.getSimpleName() + " starting...");
 
         if (args.length < 3) {
             System.err.println("Argument(s) missing!");
-            System.err.printf("Usage: java %s uddiURL wsName wsURL%n", BrokerApplication.class.getName());
+            printUsage();
             return;
+        }
+        
+        String brokerType = args.length > 3 ? args[3].toLowerCase() : REPLICATION_NONE;
+        if(brokerType.equals(REPLICATION_NONE) 
+        		&& brokerType.equals(REPLICATION_MASTER) 
+        		&& brokerType.equals(REPLICATION_SLAVE) ) {
+            System.err.printf("Unknown replication mode '%s'%n", brokerType);
+        	printUsage();
+        }
+        
+        String slaveURL;
+        if(brokerType.equals(REPLICATION_MASTER) && args.length == 4) {
+        	slaveURL = args[4];
+        } else if(brokerType.equals(REPLICATION_MASTER)) {
+        	printUsage();
+        	return;
         }
 
         String uddiURL = args[0];
@@ -25,6 +49,7 @@ public class BrokerApplication {
 
         try {
             endpoint = Endpoint.create(new BrokerPort(uddiURL, name, url));
+            // TODO FIXME start master, slave, or broker without replication
 
             // publish endpoint
             System.out.printf("Starting %s%n", url);
