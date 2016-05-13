@@ -137,10 +137,24 @@ public class BrokerPort implements BrokerPortType {
     }
 
 	@Override
-	public String updateState(boolean clearJobs, int counter, BrokerTVUpdateType brokerTV) {
-		// TODO Auto-generated method stub
-		return null;
+	public String updateState(boolean clearJobs, int counter, BrokerTVUpdateType brokerTVU) {
+		if(clearJobs) {
+			clearTransports();
+			return "clear";
+		} else {
+			broker.updateState(brokerTVU, counter);
+			return "update";
+		}
 	}
 
+	protected void sendUpdate(boolean clearJobs, String id) {
+		int counter = 0;
+		BrokerTVUpdateType brokerTVU = null;
+		if(!clearJobs) {
+			counter = broker.getCounter();
+			brokerTVU = broker.getBTVUpdate(id);
+		}
+		// TODO FIXME XXX XXX XXX XXX call slave.updateState(...)
+	}
 
 }

@@ -28,10 +28,40 @@ public class BrokerTransportView extends TransportView {
     	maxPrice = btvu.getMaxPrice();
     	client   = new TransporterClient(btvu.getClientEndpoint());
     	transporterJobId = btvu.getTransporterJobId();
+    	TransportView tv = btvu.getTransporterView();
+    	
+    	// TransportView's attributes
+    	this.id=tv.getId();
+    	this.origin=tv.getOrigin();
+    	this.destination=tv.getDestination();
+    	this.price=tv.getPrice();
+    	this.transporterCompany=tv.getTransporterCompany();
+    	this.state=tv.getState();
     	
         initUnavailableTransportFault();
         initUnavailableTransportPriceFault();
     }
+    
+    public BrokerTVUpdateType toBTVUpdate() {
+    	BrokerTVUpdateType state = new BrokerTVUpdateType();
+    	
+    	state.setMaxPrice(maxPrice);
+    	state.setClientEndpoint(client.getEndpointAddress());
+    	state.setTransporterJobId(transporterJobId);
+
+    	// TransportView's attributes
+    	TransportView tv = new TransportView();
+    	tv.setId(this.id);
+    	tv.setOrigin(this.origin);
+    	tv.setDestination(this.destination);
+    	tv.setPrice(this.price);
+    	tv.setTransporterCompany(this.transporterCompany);
+    	tv.setState(this.state);
+    	state.setTransporterView(tv);
+    	
+    	return state;
+    }
+    
     
     public BrokerTransportView(String origin, String destination, int maxPrice, String UID) {
         this.origin = origin;

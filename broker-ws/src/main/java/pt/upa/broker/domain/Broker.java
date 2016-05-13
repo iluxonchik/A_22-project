@@ -2,6 +2,7 @@ package pt.upa.broker.domain;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerException;
+import pt.upa.broker.ws.BrokerTVUpdateType;
 import pt.upa.broker.ws.TransportView;
 import pt.upa.broker.ws.UnavailableTransportFault_Exception;
 import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
@@ -18,22 +19,6 @@ import java.util.*;
  * A Broker tied to a specific URL of UDDI
  */
 public final class Broker {
-	
-	public class BrokerStateUpdate {
-		private BrokerTransportView btw;
-		private int counter;
-		public BrokerStateUpdate( BrokerTransportView btw, int counter) {
-			this.btw = btw;
-			this.counter = counter;
-		}
-		
-		public BrokerTransportView getBTW() {
-			return btw;
-		}
-		public int getCounter() {
-			return counter;
-		}
-	}
 	
     private static final String TRANSPORTER_WLDCRT = "UpaTransporter%";
 
@@ -127,15 +112,32 @@ public final class Broker {
     
     /** used by the slave BrokerPort to save the job sent by the master
      */
-    public void updateState(BrokerStateUpdate bsu) {
-    	BrokerTransportView btw = bsu.getBTW();
-    	jobs.put(btw.getId(), btw); // job is replaced if it already exists
-    	counter = bsu.getCounter();
+    public void updateState(BrokerTVUpdateType btvu, int counter) {
+		if( btvu != null) {
+			BrokerTransportView btv = new BrokerTransportView(btvu);
+    		jobs.put(btv.getId(), btv); // job is replaced if it already exists
+		} else {
+    		System.out.println("Broker.updateState(): received null BrokerTVUpdateType");
+		}
+    	if( counter < Broker.counter) {
+    		System.out.println("Broker.updateState(): counter update is LOWER than current counter! bug!!");
+    	} else {
+    		Broker.counter = counter;
+    	}
     }
 
     /** used by the master BrokerPort to get the job to be sent to the slave
+     * don't forget to also update the counter
      */
-    public BrokerStateUpdate getBTWJob(String id) {
-    	return new BrokerStateUpdate( jobs.get(id), counter);
+    public BrokerTVUpdateType getBTVUpdate(String id) {
+    	BrokerTransportView btv = jobs.get(id);
+    	if(btv != null) {
+    		return btv.toBTVUpdate();
+    	}
+    	return null;
     }
+
+	public int getCounter() {
+		return counter;
+	}
 }

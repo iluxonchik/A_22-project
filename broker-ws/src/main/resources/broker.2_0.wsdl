@@ -161,6 +161,7 @@
             		<xs:element name="lowestPrice" type="xs:int"></xs:element>
             		<xs:element name="clientEndpoint" type="xs:string"></xs:element>
             		<xs:element name="transporterJobId" type="xs:string"></xs:element>
+            		<xs:element name="transporterView" type="tns:transportView"></xs:element>
             	</xs:sequence>
             </xs:complexType>
             <xs:element name="updateState">
