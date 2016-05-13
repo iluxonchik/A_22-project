@@ -7,7 +7,7 @@ public class BrokerException extends RuntimeException {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 201605102233L;
+	private static final long serialVersionUID = 201605102234L;
 
 	public BrokerException(String msg) {
         super(msg);

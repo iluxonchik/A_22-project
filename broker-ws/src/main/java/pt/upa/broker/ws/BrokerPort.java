@@ -1,5 +1,6 @@
 package pt.upa.broker.ws;
 
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
 import pt.upa.handler.RequestIDHandler;
@@ -8,9 +9,14 @@ import pt.upa.shared.Region;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
+
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+
 import java.util.List;
+import java.util.Map;
 
 
 @WebService(
@@ -147,14 +153,25 @@ public class BrokerPort implements BrokerPortType {
 		}
 	}
 
-	protected void sendUpdate(boolean clearJobs, String id) {
+	protected void sendUpdate(BrokerPortType slave, boolean clearJobs, String id) {
 		int counter = 0;
 		BrokerTVUpdateType brokerTVU = null;
 		if(!clearJobs) {
 			counter = broker.getCounter();
 			brokerTVU = broker.getBTVUpdate(id);
 		}
-		// TODO FIXME XXX XXX XXX XXX call slave.updateState(...)
+		slave.updateState(clearJobs, counter, brokerTVU);
 	}
-
+	
+	protected BrokerPortType getRemoteBroker(String url) throws JAXRException {
+		UDDINaming uddiNaming = new UDDINaming(uddiUrl);
+	    String endpointAddress = uddiNaming.lookup(wsName);
+		BrokerService service = new BrokerService();
+		BrokerPortType port = service.getBrokerPort();
+		BindingProvider bindingProvider = (BindingProvider) port;
+		Map<String, Object> requestContext = bindingProvider.getRequestContext();
+		requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
+		return port;
+	}
+	
 }

@@ -2,6 +2,8 @@ package pt.upa.broker;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.ws.BrokerPort;
+import pt.upa.broker.ws.MasterBrokerPort;
+import pt.upa.broker.ws.SlaveBrokerPort;
 
 import javax.xml.ws.Endpoint;
 
@@ -12,7 +14,7 @@ public class BrokerApplication {
 
 	
 	private static void printUsage() {
-        System.err.printf("Usage: java %s uddiURL wsName wsURL [none|slave|(master slave_wsURL)]%n", BrokerApplication.class.getName());
+        System.err.printf("Usage: java %s uddiURL wsName wsURL [none|((slave|master) other_wsURL)]%n", BrokerApplication.class.getName());
 	}
 	
     public static void main(String[] args) throws Exception {
@@ -32,12 +34,14 @@ public class BrokerApplication {
         	printUsage();
         }
         
-        String slaveURL;
-        if(brokerType.equals(REPLICATION_MASTER) && args.length == 4) {
-        	slaveURL = args[4];
-        } else if(brokerType.equals(REPLICATION_MASTER)) {
+        String otherURL;
+        if((brokerType.equals(REPLICATION_MASTER) || brokerType.equals(REPLICATION_SLAVE)) && args.length <= 4) {
         	printUsage();
         	return;
+        } else if( brokerType.equals(REPLICATION_MASTER)|| brokerType.equals(REPLICATION_SLAVE)) {
+        	otherURL = args[4];
+        } else {
+        	otherURL = "invalid stuff to avoid uninitialized warning";
         }
 
         String uddiURL = args[0];
@@ -48,11 +52,19 @@ public class BrokerApplication {
         UDDINaming uddiNaming = null;
 
         try {
-            endpoint = Endpoint.create(new BrokerPort(uddiURL, name, url));
-            // TODO FIXME start master, slave, or broker without replication
-
+        	BrokerPort bp;
+        	if(brokerType.equals(REPLICATION_MASTER)) {
+        		bp = new MasterBrokerPort(uddiURL, name, url, otherURL);
+        	} else if(brokerType.equals(REPLICATION_SLAVE)) {
+        		bp = new SlaveBrokerPort(uddiURL, name, url, otherURL);
+        	} else {
+        		bp = new BrokerPort(uddiURL, name, url);
+        	}
+        	
+            endpoint = Endpoint.create(bp);
+            
             // publish endpoint
-            System.out.printf("Starting %s%n", url);
+            System.out.printf("Starting %s as %s%n", url, brokerType);
             endpoint.publish(url);
 
             // publish to UDDI
