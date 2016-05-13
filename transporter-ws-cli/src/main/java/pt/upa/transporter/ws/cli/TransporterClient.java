@@ -59,7 +59,7 @@ public final class TransporterClient implements TransporterPortType {
             if (endpointAddress == null) {
                 throw new TransporterClientException("'" + wsName + "' Not Found at " + uddiURL);
             } else {
-                System.out.printf("Found %s%n", endpointAddress);
+                //System.out.printf("Found %s%n", endpointAddress);
             }
             createStub();
         } catch (JAXRException e) {
@@ -137,7 +137,7 @@ public final class TransporterClient implements TransporterPortType {
             if (endpointAddress == null) {
                 throw new TransporterClientException("'" + wsName + "' Not Found at " + uddiURL);
             } else {
-                System.out.printf("Found %s%n", endpointAddress);
+                //System.out.printf("Found %s%n", endpointAddress);
             }
             createStub();
         } catch (JAXRException e) {

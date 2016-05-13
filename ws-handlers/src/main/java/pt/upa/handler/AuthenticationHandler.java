@@ -2,6 +2,7 @@ package pt.upa.handler;
 
 
 import pt.upa.ca.ws.cli.CAClient;
+import pt.upa.handler.domain.CertificateManager;
 import pt.upa.shared.domain.CertificateHelper;
 
 import javax.xml.namespace.QName;
@@ -20,10 +21,6 @@ import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static pt.upa.handler.RequestIDHandler.CONTEXT_REQUEST_ID;
 
 public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
     /**
@@ -41,6 +38,7 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
     private static boolean DEBUG = false;
     private static HashSet<String> requestHistory = new HashSet<>();
+    CertificateManager certificateManager = new CertificateManager(10*1000); // 10 second cache
 
     @Override
     public Set<QName> getHeaders() {
@@ -120,8 +118,9 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
                 // Contact CA for certificate
                 // TODO: check local cache first
                 CAClient ca = new CAClient();
-                Certificate cert  = CertificateHelper
-                        .readCertificateFromByteArray(ca.getCertificate(headerElems.get(SENDER_HEADER_NAME)));
+                //Certificate cert  = CertificateHelper
+                        //.readCertificateFromByteArray(ca.getCertificate(headerElems.get(SENDER_HEADER_NAME)));
+                Certificate cert = certificateManager.getCertificate(headerElems.get(SENDER_HEADER_NAME), ca);
                 log("Got certificate from CA");
                 log("[IMPORTANT] INBOUND Nonce : Encoded " + nonce + " : " + headerElems.get(AUTH_HEADER_NAME));
                 log("[IMPORTANT] INBOUND Nonce : BODY " + nonce + " : " + getSoapBodyXML(msg));
