@@ -3,8 +3,20 @@ package pt.upa.broker.ws;
 
 import java.util.List;
 
+import javax.jws.HandlerChain;
+import javax.jws.WebService;
 import javax.xml.registry.JAXRException;
 
+
+@WebService(
+        endpointInterface = "pt.upa.broker.ws.BrokerPortType",
+        wsdlLocation = "broker.2_0.wsdl",
+        name = "Broker",
+        portName = "BrokerPort",
+        targetNamespace = "http://ws.broker.upa.pt/",
+        serviceName = "BrokerService"
+)
+@HandlerChain(file = "/broker_handler-chain.xml")
 public class MasterBrokerPort extends BrokerPort {
 	protected BrokerPortType slave;
 	protected String slaveURL;

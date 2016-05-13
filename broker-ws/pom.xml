@@ -21,6 +21,11 @@
         <wsdl.filename>broker.2_0.wsdl</wsdl.filename>
 
         <mainclass>pt.upa.broker.BrokerApplication</mainclass>
+        
+        <!--  these are used in exec args -->
+        <!-- broker operation mode (master/slave/no replication) - redefine using -D option - e.g. mvn -Dws.bmode=master exec:java -->
+        <ws.bmode>master</ws.bmode>
+        <ws.slaveurl>http://localhost:18080/broker-ws_slave/endpoint</ws.slaveurl>
 
         <uddi.url>http://localhost:9090</uddi.url>
         <ws.url>http://localhost:8080/broker-ws/endpoint</ws.url>
@@ -134,6 +139,8 @@
                         <argument>${uddi.url}</argument>
                         <argument>${ws.name}</argument>
                         <argument>${ws.url}</argument>
+                        <argument>${ws.bmode}</argument>
+                        <argument>${ws.slaveurl}</argument>
                     </arguments>
                 </configuration>
             </plugin>

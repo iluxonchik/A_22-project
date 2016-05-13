@@ -34,14 +34,14 @@ public class BrokerApplication {
         	printUsage();
         }
         
-        String otherURL;
+        String slaveURL;
         if((brokerType.equals(REPLICATION_MASTER) || brokerType.equals(REPLICATION_SLAVE)) && args.length <= 4) {
         	printUsage();
         	return;
         } else if( brokerType.equals(REPLICATION_MASTER)|| brokerType.equals(REPLICATION_SLAVE)) {
-        	otherURL = args[4];
+        	slaveURL = args[4];
         } else {
-        	otherURL = "invalid stuff to avoid uninitialized warning";
+        	slaveURL = "invalid stuff to avoid uninitialized warning";
         }
 
         String uddiURL = args[0];
@@ -51,26 +51,28 @@ public class BrokerApplication {
         Endpoint endpoint = null;
         UDDINaming uddiNaming = null;
 
+        String localBrokerURL = url; // for master and no replication modes
         try {
         	BrokerPort bp;
         	if(brokerType.equals(REPLICATION_MASTER)) {
-        		bp = new MasterBrokerPort(uddiURL, name, url, otherURL);
+        		bp = new MasterBrokerPort(uddiURL, name, localBrokerURL, slaveURL);
         	} else if(brokerType.equals(REPLICATION_SLAVE)) {
-        		bp = new SlaveBrokerPort(uddiURL, name, url, otherURL);
+        		localBrokerURL = slaveURL;
+        		bp = new SlaveBrokerPort(uddiURL, name, localBrokerURL, url);
         	} else {
-        		bp = new BrokerPort(uddiURL, name, url);
+        		bp = new BrokerPort(uddiURL, name, localBrokerURL);
         	}
         	
             endpoint = Endpoint.create(bp);
             
             // publish endpoint
-            System.out.printf("Starting %s as %s%n", url, brokerType);
-            endpoint.publish(url);
+            System.out.printf("Starting %s as %s%n", localBrokerURL, brokerType);
+            endpoint.publish(localBrokerURL);
 
             // publish to UDDI
             System.out.printf("Publishing '%s' to UDDI at %s%n", name, uddiURL);
             uddiNaming = new UDDINaming(uddiURL);
-            uddiNaming.rebind(name, url);
+            uddiNaming.rebind(name, localBrokerURL);
 
             // wait
             System.out.println("Awaiting connections");
@@ -86,7 +88,7 @@ public class BrokerApplication {
                 if (endpoint != null) {
                     // stop endpoint
                     endpoint.stop();
-                    System.out.printf("Stopped %s%n", url);
+                    System.out.printf("Stopped %s%n", localBrokerURL);
                 }
             } catch (Exception e) {
                 System.out.printf("Caught exception when stopping: %s%n", e);

@@ -14,7 +14,7 @@ public class RequestIDHandler implements SOAPHandler<SOAPMessageContext> {
     private static final String namespace = "http://pt.upa.a22";
 
     public static final String CONTEXT_REQUEST_ID = "pt.upa.handler.requestID";
-    private static boolean DEBUG = false;
+    private static boolean DEBUG = true;
 
     @Override
     public Set<QName> getHeaders() {
