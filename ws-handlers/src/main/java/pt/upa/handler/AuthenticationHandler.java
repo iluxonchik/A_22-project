@@ -6,17 +6,20 @@ import pt.upa.shared.domain.CertificateHelper;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.security.PrivateKey;
 import java.security.cert.Certificate;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,7 +40,7 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
     private static final String NAMESPACE = "http://pt.upa.a22";
 
     private static boolean DEBUG = false;
-    private final Pattern pattern = Pattern.compile("<S:Body>.*<:Body>");
+    private static HashSet<String> requestHistory = new HashSet<>();
 
     @Override
     public Set<QName> getHeaders() {
@@ -46,7 +49,7 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
     public boolean handleMessage(SOAPMessageContext soapMessageContext) {
-        setDebug(true);
+        setDebug(false);
         boolean isOutbound = (Boolean) soapMessageContext.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
 
         try {
@@ -106,6 +109,13 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
                 HashMap<String, String> headerElems = new HashMap<>();
 
                 parseHeaderElements(sh, senv, headerElems);
+
+                // Check if message with such nonce was sent before (replay attack prevention)
+                if (requestHistory.contains(headerElems.get(NONCE_HEADER_NAME))) {
+                    return false;
+                } else {
+                    requestHistory.add(headerElems.get(NONCE_HEADER_NAME));
+                }
 
                 // Contact CA for certificate
                 // TODO: check local cache first
@@ -176,12 +186,13 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
     }
 
-    private final String getSoapBodyXML(SOAPMessage msg) throws IOException, SOAPException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        msg.writeTo(out);
-        String result = new String(out.toByteArray());
-        //return new String(result);
-        return "";
+    private final String getSoapBodyXML(SOAPMessage msg) throws IOException, SOAPException, TransformerException {
+        SOAPBody sb = msg.getSOAPBody();
+        DOMSource source = new DOMSource(sb);
+        StringWriter stringResult = new StringWriter();
+        TransformerFactory.newInstance().newTransformer().transform(source, new StreamResult(stringResult));
+        String message = stringResult.toString();
+        return message;
     }
 
     private long getNonce() {
