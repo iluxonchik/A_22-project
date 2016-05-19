@@ -40,6 +40,7 @@ public class SlaveBrokerPort extends BrokerPort {
         	synchronized (watchdogTimer) {
         		try{
         		watchdogTimer.cancel();
+    	    	watchdogTimer = new Timer();
         		} catch (IllegalStateException e) {
         			
         		}
@@ -63,6 +64,7 @@ public class SlaveBrokerPort extends BrokerPort {
     	synchronized (watchdogTimer) {
     		try{
 	    	watchdogTimer.cancel();
+	    	watchdogTimer = new Timer();
 			} catch (IllegalStateException e) {
 				
 			}
