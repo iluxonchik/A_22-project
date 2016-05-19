@@ -2,6 +2,7 @@ package pt.upa.broker.domain;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.exception.BrokerException;
+import pt.upa.broker.ws.BrokerTVUpdateType;
 import pt.upa.broker.ws.TransportView;
 import pt.upa.broker.ws.UnavailableTransportFault_Exception;
 import pt.upa.broker.ws.UnavailableTransportPriceFault_Exception;
@@ -26,13 +27,14 @@ import java.util.*;
  * A Broker tied to a specific URL of UDDI
  */
 public final class Broker {
+	
     private static final String TRANSPORTER_WLDCRT = "UpaTransporter%";
 
     private static int counter = 0;
     private final String uddiUrl;
-    private TransporterClient client;
     private LinkedHashMap<String, BrokerTransportView> jobs = new LinkedHashMap<>();
     private final String wsName;
+    TransporterClient client;
 
 
     public Broker(String uddiUrl, String wsName) {
@@ -118,6 +120,38 @@ public final class Broker {
                 .forEach(c -> c.clearJobs());
         jobs.clear();
     }
+    
+    /** used by the slave BrokerPort to save the job sent by the master
+     */
+    public void updateState(BrokerTVUpdateType btvu, int counter) {
+		if( btvu != null) {
+			BrokerTransportView btv = new BrokerTransportView(btvu);
+    		jobs.put(btv.getId(), btv); // job is replaced if it already exists
+		} else {
+    		System.out.println("Broker.updateState(): received null BrokerTVUpdateType");
+		}
+    	if( counter < Broker.counter) {
+    		System.out.println("Broker.updateState(): counter update is LOWER than current counter! bug!!");
+    	} else {
+    		Broker.counter = counter;
+    	}
+    }
+
+    /** used by the master BrokerPort to get the job to be sent to the slave
+     * don't forget to also update the counter
+     */
+    public BrokerTVUpdateType getBTVUpdate(String id) {
+    	BrokerTransportView btv = jobs.get(id);
+    	if(btv != null) {
+    		return btv.toBTVUpdate();
+    	}
+    	return null;
+    }
+
+	public int getCounter() {
+		return counter;
+	}
+
 
     private void setClient(TransporterClient client) {
         this.client = client;

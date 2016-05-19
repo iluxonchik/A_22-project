@@ -2,18 +2,46 @@ package pt.upa.broker;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.ws.BrokerPort;
+import pt.upa.broker.ws.MasterBrokerPort;
+import pt.upa.broker.ws.SlaveBrokerPort;
 
 import javax.xml.ws.Endpoint;
 
 public class BrokerApplication {
+	public static final String REPLICATION_NONE = "none";
+	public static final String REPLICATION_MASTER = "master";
+	public static final String REPLICATION_SLAVE = "slave";
 
+	
+	private static void printUsage() {
+        System.err.printf("Usage: java %s uddiURL wsName wsURL [none|((slave|master) other_wsURL)]%n", BrokerApplication.class.getName());
+	}
+	
     public static void main(String[] args) throws Exception {
         System.out.println(BrokerApplication.class.getSimpleName() + " starting...");
 
         if (args.length < 3) {
             System.err.println("Argument(s) missing!");
-            System.err.printf("Usage: java %s uddiURL wsName wsURL%n", BrokerApplication.class.getName());
+            printUsage();
             return;
+        }
+        
+        String brokerType = args.length > 3 ? args[3].toLowerCase() : REPLICATION_NONE;
+        if(brokerType.equals(REPLICATION_NONE) 
+        		&& brokerType.equals(REPLICATION_MASTER) 
+        		&& brokerType.equals(REPLICATION_SLAVE) ) {
+            System.err.printf("Unknown replication mode '%s'%n", brokerType);
+        	printUsage();
+        }
+        
+        String slaveURL;
+        if((brokerType.equals(REPLICATION_MASTER) || brokerType.equals(REPLICATION_SLAVE)) && args.length <= 4) {
+        	printUsage();
+        	return;
+        } else if( brokerType.equals(REPLICATION_MASTER)|| brokerType.equals(REPLICATION_SLAVE)) {
+        	slaveURL = args[4];
+        } else {
+        	slaveURL = "invalid stuff to avoid uninitialized warning";
         }
 
         String uddiURL = args[0];
@@ -23,17 +51,28 @@ public class BrokerApplication {
         Endpoint endpoint = null;
         UDDINaming uddiNaming = null;
 
+        String localBrokerURL = url; // for master and no replication modes
         try {
-            endpoint = Endpoint.create(new BrokerPort(uddiURL, name, url));
-
+        	BrokerPort bp;
+        	if(brokerType.equals(REPLICATION_MASTER)) {
+        		bp = new MasterBrokerPort(uddiURL, name, localBrokerURL, slaveURL);
+        	} else if(brokerType.equals(REPLICATION_SLAVE)) {
+        		localBrokerURL = slaveURL;
+        		bp = new SlaveBrokerPort(uddiURL, name, localBrokerURL, url);
+        	} else {
+        		bp = new BrokerPort(uddiURL, name, localBrokerURL);
+        	}
+        	
+            endpoint = Endpoint.create(bp);
+            
             // publish endpoint
-            System.out.printf("Starting %s%n", url);
-            endpoint.publish(url);
+            System.out.printf("Starting %s as %s%n", localBrokerURL, brokerType);
+            endpoint.publish(localBrokerURL);
 
             // publish to UDDI
             System.out.printf("Publishing '%s' to UDDI at %s%n", name, uddiURL);
             uddiNaming = new UDDINaming(uddiURL);
-            uddiNaming.rebind(name, url);
+            uddiNaming.rebind(name, localBrokerURL);
 
             // wait
             System.out.println("Awaiting connections");
@@ -49,7 +88,7 @@ public class BrokerApplication {
                 if (endpoint != null) {
                     // stop endpoint
                     endpoint.stop();
-                    System.out.printf("Stopped %s%n", url);
+                    System.out.printf("Stopped %s%n", localBrokerURL);
                 }
             } catch (Exception e) {
                 System.out.printf("Caught exception when stopping: %s%n", e);

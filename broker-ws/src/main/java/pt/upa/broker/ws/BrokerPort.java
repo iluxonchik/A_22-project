@@ -1,5 +1,6 @@
 package pt.upa.broker.ws;
 
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.upa.broker.domain.Broker;
 import pt.upa.broker.domain.BrokerTransportView;
 import pt.upa.handler.RequestIDHandler;
@@ -8,14 +9,22 @@ import pt.upa.shared.Region;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceContext;
+
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 @WebService(
         endpointInterface = "pt.upa.broker.ws.BrokerPortType",
-        wsdlLocation = "broker.1_0.wsdl",
+        wsdlLocation = "broker.2_0.wsdl",
         name = "Broker",
         portName = "BrokerPort",
         targetNamespace = "http://ws.broker.upa.pt/",
@@ -23,6 +32,7 @@ import java.util.List;
 )
 @HandlerChain(file = "/broker_handler-chain.xml")
 public class BrokerPort implements BrokerPortType {
+    protected static final long WATCH_DELAY_MS = 460;
     @Resource
     private WebServiceContext webServiceContext;
 
@@ -31,8 +41,12 @@ public class BrokerPort implements BrokerPortType {
     private static UnknownTransportFault unknownTransportFault; // to avoid creating multiple instances; lazy instantiation
     private final Broker broker;
 
-    private final String uddiUrl, wsName, wsUrl;
+    private final String uddiUrl;
+	protected final String wsName;
+	protected final String wsUrl;
 
+    private LinkedHashMap<String, String> requestCache = new LinkedHashMap<String, String>(); 
+    
     public BrokerPort() {
         /* Required default constructor */
         this(null, null, null);
@@ -45,12 +59,18 @@ public class BrokerPort implements BrokerPortType {
         this.wsUrl = wsUrl;
     }
 
+    protected String getRequestID() {
+    	String headerVal = (String)webServiceContext.getMessageContext().get(RequestIDHandler.CONTEXT_REQUEST_ID);
+        return headerVal;
+    }
+    
+    protected void putRequestId(BrokerPortType port, String id) {
+    	((BindingProvider) port).getRequestContext()
+    		.put(RequestIDHandler.CONTEXT_REQUEST_ID, id);
+    }
+    
     @Override
     public String ping(String name) {
-        // TODO: DEMO REMOVE. This is a demo of how requestIDs should be read back from the Handler, remove the two lines below
-        String headerVal = (String)webServiceContext.getMessageContext().get(RequestIDHandler.CONTEXT_REQUEST_ID);
-        System.out.println("---TEST---\nReceived value: " + headerVal + "\n---TEST---");
-
         return "Hello " + name + " !";
     }
 
@@ -136,4 +156,52 @@ public class BrokerPort implements BrokerPortType {
         broker.clearTransports();
     }
 
+	@Override
+	public String updateState(boolean clearJobs, int counter, BrokerTVUpdateType brokerTVU, String reqID, String response) {
+		if(clearJobs) {
+			clearTransports();
+			return "clear";
+		} else {
+			broker.updateState(brokerTVU, counter);
+			if( reqID != null) {
+				cache(reqID, response);
+			}
+			return "update";
+		}
+	}
+
+	protected void sendUpdate(BrokerPortType slave, boolean clearJobs, String jid, String reqID) {
+		int counter = 0;
+		BrokerTVUpdateType brokerTVU = null;
+		if(!clearJobs) {
+			counter = broker.getCounter();
+			brokerTVU = broker.getBTVUpdate(jid);
+		}
+		slave.updateState(clearJobs, counter, brokerTVU, reqID, jid);
+	}
+	
+	protected BrokerPortType getRemoteBroker(String url) throws JAXRException {
+		UDDINaming uddiNaming = new UDDINaming(getUddiUrl());
+	    String endpointAddress = uddiNaming.lookup(wsName);
+		BrokerService service = new BrokerService();
+		BrokerPortType port = service.getBrokerPort();
+		BindingProvider bindingProvider = (BindingProvider) port;
+		Map<String, Object> requestContext = bindingProvider.getRequestContext();
+		requestContext.put(ENDPOINT_ADDRESS_PROPERTY, endpointAddress);
+		return port;
+	}
+	
+	protected String getCachedRequest(String id) {
+		return requestCache.get(id);
+	}
+	
+	protected String cache(String id, String response) {
+		return requestCache.put(id, response);
+	}
+
+	protected String getUddiUrl() {
+		return uddiUrl;
+	}
+	
+	
 }

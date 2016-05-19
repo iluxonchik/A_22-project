@@ -14,13 +14,55 @@ public class BrokerTransportView extends TransportView {
     private final int maxPrice;
     private UnavailableTransportFault unavailableTransportFault;
     private UnavailableTransportPriceFault unavailableTransportPriceFault;
+	/// no need to sync with slave
     private int lowestPrice = Integer.MAX_VALUE; // optional, can use JobView's price instead, but this makes it clearer
+	/// no need to sync with slave
     private JobView bestJob;
+    /// can recreate it from String endpoint
     private TransporterClient client;
     // the corresponding job id on the transporter's side (this.id corresponds to transporters transporterJobId)
     // used internally to communicate with the transporter
     private String transporterJobId;
 
+    public BrokerTransportView(BrokerTVUpdateType btvu) {
+    	maxPrice = btvu.getMaxPrice();
+    	client   = new TransporterClient(btvu.getClientEndpoint());
+    	transporterJobId = btvu.getTransporterJobId();
+    	TransportView tv = btvu.getTransporterView();
+    	
+    	// TransportView's attributes
+    	this.id=tv.getId();
+    	this.origin=tv.getOrigin();
+    	this.destination=tv.getDestination();
+    	this.price=tv.getPrice();
+    	this.transporterCompany=tv.getTransporterCompany();
+    	this.state=tv.getState();
+    	
+        initUnavailableTransportFault();
+        initUnavailableTransportPriceFault();
+    }
+    
+    public BrokerTVUpdateType toBTVUpdate() {
+    	BrokerTVUpdateType state = new BrokerTVUpdateType();
+    	
+    	state.setMaxPrice(maxPrice);
+    	state.setClientEndpoint(client.getEndpointAddress());
+    	state.setTransporterJobId(transporterJobId);
+
+    	// TransportView's attributes
+    	TransportView tv = new TransportView();
+    	tv.setId(this.id);
+    	tv.setOrigin(this.origin);
+    	tv.setDestination(this.destination);
+    	tv.setPrice(this.price);
+    	tv.setTransporterCompany(this.transporterCompany);
+    	tv.setState(this.state);
+    	state.setTransporterView(tv);
+    	
+    	return state;
+    }
+    
+    
     public BrokerTransportView(String origin, String destination, int maxPrice, String UID) {
         this.origin = origin;
         this.destination = destination;
@@ -116,23 +158,23 @@ public class BrokerTransportView extends TransportView {
         this.state = TransportStateView.FAILED;
     }
 
-    public int getLowestPrice() {
+    protected int getLowestPrice() {
         return lowestPrice;
     }
 
-    public JobView getBestJob() {
+    protected JobView getBestJob() {
         return bestJob;
     }
 
-    public String getTransporterJobId() {
+    protected String getTransporterJobId() {
         return this.transporterJobId;
     }
 
-    public TransporterClient getClient() {
+    protected TransporterClient getClient() {
         return client;
     }
 
-    public int getMaxPrice() {
+    protected int getMaxPrice() {
         return maxPrice;
     }
 
