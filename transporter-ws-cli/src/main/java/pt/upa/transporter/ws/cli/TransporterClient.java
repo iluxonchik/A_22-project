@@ -5,6 +5,7 @@ import pt.upa.handler.AuthenticationHandler;
 import pt.upa.shared.domain.CertificateHelper;
 import pt.upa.transporter.exception.TransporterClientException;
 import pt.upa.transporter.ws.*;
+import sun.awt.AWTIcon32_security_icon_yellow16_png;
 
 import javax.xml.registry.JAXRException;
 import javax.xml.ws.BindingProvider;
@@ -225,8 +226,23 @@ public final class TransporterClient implements TransporterPortType {
         return wsName;
     }
 
+
     private void setReqContext() {
         bindingProvider.getRequestContext().put(AuthenticationHandler.CONTEXT_PRIVATE_KEY, this.brokerPrivateKey);
         bindingProvider.getRequestContext().put(AuthenticationHandler.CONTEXT_SENDER_NAME, this.brokerWsName);
+    }
+
+    public void DEMOturnDemoModeOn() {
+        bindingProvider.getRequestContext().put(AuthenticationHandler.DEMO_MODE, "true");
+    }
+
+    public void DEMOchangeNonce(String nonce) {
+        DEMOturnDemoModeOn();
+        bindingProvider.getRequestContext().put(AuthenticationHandler.CHANGE_NONCE, nonce);
+    }
+
+    public void DEMOFixNonce(String nonce) {
+        DEMOturnDemoModeOn();
+        bindingProvider.getRequestContext().put(AuthenticationHandler.FIX_NONCE, nonce);
     }
 }
