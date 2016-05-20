@@ -35,11 +35,17 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
     private static final String AUTH_HEADER_NAME = "pt.upa.handler.auth";
 
     private static final String NAME_PREFIX = "d";
-    private static final String NAMESPACE = "http://pt.upa.a22";
 
+    private static final String NAMESPACE = "http://pt.upa.a22";
     private static boolean DEBUG = false;
+
     private static HashSet<String> requestHistory = new HashSet<>();
     CertificateManager certificateManager = new CertificateManager(10*1000); // 10 second cache
+
+    /** XXX DEMO **/
+    public static final String CHANGE_NONCE = "pt.upa.handler.changenonce";
+    public static final String FIX_NONCE = "pt.upa.handler.fixnonce";
+    public static final String DEMO_MODE = "pt.upa.handler.demomode";
 
     @Override
     public Set<QName> getHeaders() {
@@ -48,9 +54,9 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
     @Override
     public boolean handleMessage(SOAPMessageContext soapMessageContext) {
-        setDebug(false);
-        boolean isOutbound = (Boolean) soapMessageContext.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+        setDebug(soapMessageContext.containsKey(DEMO_MODE));
 
+        boolean isOutbound = (Boolean) soapMessageContext.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
         try {
             // get SOAP envelope
             final SOAPMessage msg = soapMessageContext.getMessage();
@@ -60,7 +66,7 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
             final String senderName;
             final PrivateKey privateKey;
-            final long nonce = getNonce();
+            final long nonce = (soapMessageContext.containsKey(FIX_NONCE))? Long.valueOf((String)soapMessageContext.get(FIX_NONCE)) : getNonce();
 
 
             if (isOutbound) {
@@ -93,9 +99,18 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
                 // add the needed elements to header and we're good to go!
                 addHeaderElement(sh, senv, SENDER_HEADER_NAME, senderName);
-                addHeaderElement(sh, senv, NONCE_HEADER_NAME, String.valueOf(nonce));
-                addHeaderElement(sh, senv, AUTH_HEADER_NAME, encodedSig);
 
+                /** XXX DEMO **/
+                if(soapMessageContext.containsKey(CHANGE_NONCE)) {
+                    final String fake_nonce = (String)soapMessageContext.get(CHANGE_NONCE);
+                    System.out.println("[DEMO-OUTBOUND] Changing nonce from " + nonce + " to " + fake_nonce);
+                    addHeaderElement(sh, senv, NONCE_HEADER_NAME, fake_nonce);
+                } else {
+                    addHeaderElement(sh, senv, NONCE_HEADER_NAME, String.valueOf(nonce));
+
+                }
+                /** END XXX DEMO */
+                addHeaderElement(sh, senv, AUTH_HEADER_NAME, encodedSig);
                 log("[IMPORTANT] OUTBOUND Nonce : Encoded " + nonce + " : " + encodedSig);
                 log("[IMPORTANT] OUTBOUND Nonce : BODY " + nonce + " : " + getSoapBodyXML(msg));
 
@@ -111,6 +126,8 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
 
                 // Check if message with such nonce was sent before (replay attack prevention)
                 if (requestHistory.contains(headerElems.get(NONCE_HEADER_NAME))) {
+                    /** XXX DEMO **/
+                    System.out.println("[DEMO-INBOUND] NONCE " + headerElems.get(NONCE_HEADER_NAME) + " has been used before");
                     return false;
                 } else {
                     requestHistory.add(headerElems.get(NONCE_HEADER_NAME));
@@ -120,7 +137,7 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
                 // TODO: check local cache first
                 CAClient ca = new CAClient();
                 //Certificate cert  = CertificateHelper
-                        //.readCertificateFromByteArray(ca.getCertificate(headerElems.get(SENDER_HEADER_NAME)));
+                //.readCertificateFromByteArray(ca.getCertificate(headerElems.get(SENDER_HEADER_NAME)));
                 Certificate cert = certificateManager.getCertificate(headerElems.get(SENDER_HEADER_NAME), ca);
                 Certificate caCert = CertificateHelper.readCertificateFromByteArray(CertificateHelper.
                         readCertificateFile("../keys/ca/ca-certificate.pem.txt").getEncoded());
@@ -141,6 +158,10 @@ public class AuthenticationHandler implements SOAPHandler<SOAPMessageContext> {
                     log("[SUCCESS] Signature OK");
                     return true;
                 } else {
+                    /** XXX DEMO **/
+                    // force log for demo
+                    System.out.println("[DEMO-INBOUND] Got unexpected nonce: " + headerElems.get(NONCE_HEADER_NAME));
+                    /** END XXX DEMO **/
                     log("[FAIL] Signature FAIL");
                     return false;
                 }
